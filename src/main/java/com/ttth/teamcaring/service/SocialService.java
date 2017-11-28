@@ -1,13 +1,12 @@
 package com.ttth.teamcaring.service;
 
-import com.ttth.teamcaring.domain.Authority;
-import com.ttth.teamcaring.domain.User;
-import com.ttth.teamcaring.repository.AuthorityRepository;
-import com.ttth.teamcaring.repository.UserRepository;
-import com.ttth.teamcaring.security.AuthoritiesConstants;
-import com.ttth.teamcaring.repository.search.UserSearchRepository;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
-import org.apache.commons.lang3.RandomStringUtils;
+import javax.inject.Inject;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,13 +16,19 @@ import org.springframework.social.connect.ConnectionRepository;
 import org.springframework.social.connect.UserProfile;
 import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import com.ttth.teamcaring.domain.Authority;
+import com.ttth.teamcaring.domain.User;
+import com.ttth.teamcaring.repository.AuthorityRepository;
+import com.ttth.teamcaring.repository.UserRepository;
+import com.ttth.teamcaring.repository.search.UserSearchRepository;
+import com.ttth.teamcaring.security.AuthoritiesConstants;
+import com.ttth.teamcaring.service.dto.CustomUserDTO;
+import com.ttth.teamcaring.service.mapper.UserMapper;
 
 @Service
+@Transactional
 public class SocialService {
 
     private final Logger log = LoggerFactory.getLogger(SocialService.class);
@@ -39,6 +44,12 @@ public class SocialService {
     private final MailService mailService;
 
     private final UserSearchRepository userSearchRepository;
+    
+    @Inject
+    private CustomUserService customUserService;
+    
+    @Inject
+    private UserMapper userMapper;
 
     public SocialService(UsersConnectionRepository usersConnectionRepository, AuthorityRepository authorityRepository,
             PasswordEncoder passwordEncoder, UserRepository userRepository,
@@ -61,7 +72,11 @@ public class SocialService {
             });
     }
 
-    public void createSocialUser(Connection<?> connection, String langKey) {
+    public User createSocialUser(Connection<?> connection) {
+        return this.createSocialUser(connection, "vi");
+    }
+    
+    public User createSocialUser(Connection<?> connection, String langKey) {
         if (connection == null) {
             log.error("Cannot create social user because connection is null");
             throw new IllegalArgumentException("Connection cannot be null");
@@ -69,35 +84,59 @@ public class SocialService {
         UserProfile userProfile = connection.fetchUserProfile();
         String providerId = connection.getKey().getProviderId();
         String imageUrl = connection.getImageUrl();
+        Instant auditTime = Instant.now();
         User user = createUserIfNotExist(userProfile, langKey, providerId, imageUrl);
-        createSocialConnection(user.getLogin(), connection);
-        mailService.sendSocialRegistrationValidationEmail(user, providerId);
+        
+        // Check audit time to make sure this is new user, so create social connection instant
+        if (auditTime.isBefore(user.getCreatedDate())) {
+        	createSocialConnection(user.getLogin(), connection);	
+        }        
+//        mailService.sendSocialRegistrationValidationEmail(user, providerId); NOT NEED SEND EMAIL AT THIS TIME
+        
+        // Rollback to raw password (is providerId) for next create credential step
+        User rollbackUser;
+		try {
+			rollbackUser = user.clone();
+			rollbackUser.setPassword(providerId);
+			return rollbackUser;
+		} catch (CloneNotSupportedException e) {
+			this.log.error("Cannot clone User object", e);
+			return user; 
+		}
     }
 
     private User createUserIfNotExist(UserProfile userProfile, String langKey, String providerId, String imageUrl) {
-        String email = userProfile.getEmail();
-        String userName = userProfile.getUsername();
-        if (!StringUtils.isBlank(userName)) {
-            userName = userName.toLowerCase(Locale.ENGLISH);
+//        String email = userProfile.getEmail(); // for Facebook & other social network framework
+//        String userName = userProfile.getUsername(); // for Twitter        
+//        if (!StringUtils.isBlank(userName)) {
+//            userName = userName.toLowerCase(Locale.ENGLISH);
+//        }
+//        if (StringUtils.isBlank(email) && StringUtils.isBlank(userName)) {
+//            log.error("Cannot create social user because email and login are null");
+//            throw new IllegalArgumentException("Email and login cannot be null");
+//        }
+//        if (StringUtils.isBlank(email) && userRepository.findOneByLogin(userName).isPresent()) {
+//            log.error("Cannot create social user because email is null and login already exist, login -> {}", userName);
+//            throw new IllegalArgumentException("Email cannot be null with an existing login");
+//        }
+//        if (!StringUtils.isBlank(email)) {
+//        	String login = getLoginDependingOnProviderId(userProfile, providerId);            
+//            Optional<User> user = userRepository.findOneByEmailIgnoreCase(email);
+//            if (user.isPresent()) {
+//                log.info("User already exist associate the connection to this account");
+//                return user.get();
+//            }
+//        }
+        
+        String login = getLoginDependingOnProviderId(userProfile, providerId);            
+        Optional<User> user = userRepository.findOneByLogin(login);
+        if (user.isPresent()) {
+            log.info("User already exist associate the connection to this account");
+            return user.get();
         }
-        if (StringUtils.isBlank(email) && StringUtils.isBlank(userName)) {
-            log.error("Cannot create social user because email and login are null");
-            throw new IllegalArgumentException("Email and login cannot be null");
-        }
-        if (StringUtils.isBlank(email) && userRepository.findOneByLogin(userName).isPresent()) {
-            log.error("Cannot create social user because email is null and login already exist, login -> {}", userName);
-            throw new IllegalArgumentException("Email cannot be null with an existing login");
-        }
-        if (!StringUtils.isBlank(email)) {
-            Optional<User> user = userRepository.findOneByEmailIgnoreCase(email);
-            if (user.isPresent()) {
-                log.info("User already exist associate the connection to this account");
-                return user.get();
-            }
-        }
-
-        String login = getLoginDependingOnProviderId(userProfile, providerId);
-        String encryptedPassword = passwordEncoder.encode(RandomStringUtils.random(10));
+        
+        String rawPassword = providerId;
+        String encryptedPassword = passwordEncoder.encode(rawPassword);
         Set<Authority> authorities = new HashSet<>(1);
         authorities.add(authorityRepository.findOne(AuthoritiesConstants.USER));
 
@@ -106,14 +145,25 @@ public class SocialService {
         newUser.setPassword(encryptedPassword);
         newUser.setFirstName(userProfile.getFirstName());
         newUser.setLastName(userProfile.getLastName());
-        newUser.setEmail(email);
+//        newUser.setEmail(email);
+        // new social user is activated
         newUser.setActivated(true);
+        // new user gets registration key
+        newUser.setActivationKey(providerId);
         newUser.setAuthorities(authorities);
         newUser.setLangKey(langKey);
         newUser.setImageUrl(imageUrl);
 
+        newUser = this.userRepository.save(newUser);
         userSearchRepository.save(newUser);
-        return userRepository.save(newUser);
+        
+        
+        // Create CustomUser entity as external user information
+        CustomUserDTO customUserDTO = new CustomUserDTO();
+        customUserDTO.setUserId(newUser.getId());
+        this.customUserService.save(customUserDTO);
+        
+        return newUser;        
     }
 
     /**
@@ -123,9 +173,10 @@ public class SocialService {
     private String getLoginDependingOnProviderId(UserProfile userProfile, String providerId) {
         switch (providerId) {
             case "twitter":
-                return userProfile.getUsername().toLowerCase();
+                return "twitter:" + userProfile.getUsername().toLowerCase();
             default:
-                return userProfile.getEmail();
+            	String email = userProfile.getEmail();
+                return providerId + ":" + (StringUtils.isNotBlank(email) ? email : userProfile.getId());
         }
     }
 

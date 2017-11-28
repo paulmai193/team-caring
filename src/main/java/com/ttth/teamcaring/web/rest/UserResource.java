@@ -1,7 +1,35 @@
 package com.ttth.teamcaring.web.rest;
 
-import com.ttth.teamcaring.config.Constants;
+import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.codahale.metrics.annotation.Timed;
+import com.ttth.teamcaring.config.Constants;
 import com.ttth.teamcaring.domain.User;
 import com.ttth.teamcaring.repository.UserRepository;
 import com.ttth.teamcaring.repository.search.UserSearchRepository;
@@ -12,30 +40,12 @@ import com.ttth.teamcaring.service.dto.UserDTO;
 import com.ttth.teamcaring.web.rest.errors.BadRequestAlertException;
 import com.ttth.teamcaring.web.rest.errors.EmailAlreadyUsedException;
 import com.ttth.teamcaring.web.rest.errors.LoginAlreadyUsedException;
-import com.ttth.teamcaring.web.rest.vm.ManagedUserVM;
 import com.ttth.teamcaring.web.rest.util.HeaderUtil;
 import com.ttth.teamcaring.web.rest.util.PaginationUtil;
+import com.ttth.teamcaring.web.rest.vm.ManagedUserVM;
+
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.ApiParam;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-
-import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
  * REST controller for managing users.

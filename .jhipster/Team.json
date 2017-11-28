@@ -1,0 +1,40 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "one-to-one",
+            "relationshipName": "subject",
+            "otherEntityName": "subject",
+            "otherEntityField": "id",
+            "ownerSide": true,
+            "otherEntityRelationshipName": "team"
+        },
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "group",
+            "otherEntityName": "groups",
+            "otherEntityRelationshipName": "team"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "name",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "description",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "level",
+            "fieldType": "Integer"
+        }
+    ],
+    "changelogDate": "20171122152651",
+    "entityTableName": "team",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "angularJSSuffix": "tc"
+}

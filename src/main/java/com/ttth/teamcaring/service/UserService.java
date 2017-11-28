@@ -1,16 +1,14 @@
 package com.ttth.teamcaring.service;
 
-import com.ttth.teamcaring.domain.Authority;
-import com.ttth.teamcaring.domain.User;
-import com.ttth.teamcaring.repository.AuthorityRepository;
-import com.ttth.teamcaring.config.Constants;
-import com.ttth.teamcaring.repository.UserRepository;
-import com.ttth.teamcaring.repository.search.UserSearchRepository;
-import com.ttth.teamcaring.security.AuthoritiesConstants;
-import com.ttth.teamcaring.security.SecurityUtils;
-import com.ttth.teamcaring.service.util.RandomUtil;
-import com.ttth.teamcaring.service.dto.UserDTO;
-import com.ttth.teamcaring.web.rest.vm.ManagedUserVM;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,34 +20,106 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.ttth.teamcaring.config.Constants;
+import com.ttth.teamcaring.domain.Authority;
+import com.ttth.teamcaring.domain.CustomUser;
+import com.ttth.teamcaring.domain.Groups;
+import com.ttth.teamcaring.domain.Team;
+import com.ttth.teamcaring.domain.User;
+import com.ttth.teamcaring.repository.AuthorityRepository;
+import com.ttth.teamcaring.repository.CustomUserRepository;
+import com.ttth.teamcaring.repository.GroupsRepository;
+import com.ttth.teamcaring.repository.TeamRepository;
+import com.ttth.teamcaring.repository.UserRepository;
+import com.ttth.teamcaring.repository.search.CustomUserSearchRepository;
+import com.ttth.teamcaring.repository.search.GroupsSearchRepository;
+import com.ttth.teamcaring.repository.search.TeamSearchRepository;
+import com.ttth.teamcaring.repository.search.UserSearchRepository;
+import com.ttth.teamcaring.security.AuthoritiesConstants;
+import com.ttth.teamcaring.security.SecurityUtils;
+import com.ttth.teamcaring.service.dto.AnonymousGroupDTO;
+import com.ttth.teamcaring.service.dto.CustomUserDTO;
+import com.ttth.teamcaring.service.dto.ProfileDTO;
+import com.ttth.teamcaring.service.dto.UserDTO;
+import com.ttth.teamcaring.service.mapper.CustomUserMapper;
+import com.ttth.teamcaring.service.util.RandomUtil;
+import com.ttth.teamcaring.web.rest.vm.ManagedUserVM;
 
 /**
  * Service class for managing users.
+ *
+ * @author Dai Mai
  */
 @Service
 @Transactional
 public class UserService {
 
+    /** The log. */
     private final Logger log = LoggerFactory.getLogger(UserService.class);
 
+    /** The Constant USERS_CACHE. */
     private static final String USERS_CACHE = "users";
 
+    /** The user repository. */
     private final UserRepository userRepository;
 
+    /** The password encoder. */
     private final PasswordEncoder passwordEncoder;
 
+    /** The social service. */
     private final SocialService socialService;
 
+    /** The user search repository. */
     private final UserSearchRepository userSearchRepository;
 
+    /** The authority repository. */
     private final AuthorityRepository authorityRepository;
 
+    /** The cache manager. */
     private final CacheManager cacheManager;
+    
+    /** The custom user repository. */
+    @Inject
+    private CustomUserRepository customUserRepository;
+    
+    /** The custom user search repository. */
+    @Inject
+    private CustomUserSearchRepository customUserSearchRepository;
+    
+    /** The custom user mapper. */
+    @Inject
+    private CustomUserMapper customUserMapper;
+        
+    /** The groups repository. */
+    @Inject
+    private GroupsRepository groupsRepository;
+    
+    /** The groups search repository. */
+    @Inject
+    private GroupsSearchRepository groupsSearchRepository;
+    
+    /** The team repository. */
+    @Inject
+    private TeamRepository teamRepository;
+    
+    /** The team search repository. */
+    @Inject
+    private TeamSearchRepository teamSearchRepository;
+    
+    /** The custom user service. */
+    @Inject
+    private CustomUserService customUserService;
 
+    /**
+     * Instantiates a new user service.
+     *
+     * @param userRepository the user repository
+     * @param passwordEncoder the password encoder
+     * @param socialService the social service
+     * @param userSearchRepository the user search repository
+     * @param authorityRepository the authority repository
+     * @param cacheManager the cache manager
+     */
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, SocialService socialService, UserSearchRepository userSearchRepository, AuthorityRepository authorityRepository, CacheManager cacheManager) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -59,6 +129,12 @@ public class UserService {
         this.cacheManager = cacheManager;
     }
 
+    /**
+     * Activate registration.
+     *
+     * @param key the key
+     * @return the optional
+     */
     public Optional<User> activateRegistration(String key) {
         log.debug("Activating user for activation key {}", key);
         return userRepository.findOneByActivationKey(key)
@@ -73,6 +149,13 @@ public class UserService {
             });
     }
 
+    /**
+     * Complete password reset.
+     *
+     * @param newPassword the new password
+     * @param key the key
+     * @return the optional
+     */
     public Optional<User> completePasswordReset(String newPassword, String key) {
        log.debug("Reset user password for reset key {}", key);
 
@@ -87,6 +170,12 @@ public class UserService {
            });
     }
 
+    /**
+     * Request password reset.
+     *
+     * @param mail the mail
+     * @return the optional
+     */
     public Optional<User> requestPasswordReset(String mail) {
         return userRepository.findOneByEmailIgnoreCase(mail)
             .filter(User::getActivated)
@@ -98,6 +187,12 @@ public class UserService {
             });
     }
 
+    /**
+     * Register user.
+     *
+     * @param userDTO the user DTO
+     * @return the user
+     */
     public User registerUser(ManagedUserVM userDTO) {
 
         User newUser = new User();
@@ -121,9 +216,19 @@ public class UserService {
         userRepository.save(newUser);
         userSearchRepository.save(newUser);
         log.debug("Created Information for User: {}", newUser);
+        
+        // Create CustomUser entity as external user information
+        this.createCustomUser(newUser);
+        
         return newUser;
     }
 
+    /**
+     * Creates the user.
+     *
+     * @param userDTO the user DTO
+     * @return the user
+     */
     public User createUser(UserDTO userDTO) {
         User user = new User();
         user.setLogin(userDTO.getLogin());
@@ -150,6 +255,10 @@ public class UserService {
         userRepository.save(user);
         userSearchRepository.save(user);
         log.debug("Created Information for User: {}", user);
+        
+        // Create CustomUser entity as external user information
+        this.createCustomUser(user);
+        
         return user;
     }
 
@@ -204,7 +313,71 @@ public class UserService {
             })
             .map(UserDTO::new);
     }
+    
+    /**
+     * Update basic profile information (full name, nickname, push token) and anonymous group information for the CURRENT user.
+     * (get by current JWT)
+     *
+     * @param profile the profile
+     * @param anonymousGroup the anonymous group
+     */
+    public void updateUserProfile(CustomUserDTO profile, AnonymousGroupDTO anonymousGroup) {
+        userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
+        	// Clear activation key to mark user activated
+        	user.setActivationKey(null);
+        	this.userSearchRepository.save(user);
+        	
+            Optional<CustomUser> optCustomUser = this.customUserRepository.findOneByUserId(user.getId());
+            CustomUser customUser;
+            if (optCustomUser.isPresent()) {
+            	customUser = optCustomUser.get();
+            } else {
+            	customUser = new CustomUser();
+            	customUser.user(user);
+            	customUser = this.customUserRepository.save(customUser);
+            }
+        	// Update user profile
+        	if (profile != null) {
+				customUser.fullName(profile.getFullName()).nickname(profile.getNickname()).pushToken(profile.getPushToken());				
+			}
+        	this.customUserSearchRepository.save(customUser);
+        	log.debug("Changed profile for User: {}", customUser);  
+        	
+        	// Update user anonymous group
+        	if (anonymousGroup != null) {
+				Optional<Groups> optGroup = customUser.getLeaders().parallelStream().filter(group -> !group.isOffical()).findFirst();
+				Groups group;
+				Team team;
+				if (optGroup.isPresent()) {
+					group = optGroup.get();
+					team = group.getTeam();
+				} else {
+					// Anonymous group not exist, create new one
+					group = new Groups();
+					group = this.groupsRepository.save(group);
+					customUser.addLeader(group);
+					this.customUserSearchRepository.save(customUser);
+					
+					// Create new temporary team for anonymous group
+					team = new Team();
+					team.addGroup(group);
+					team = this.teamRepository.save(team);					
+				}
+				group.description(anonymousGroup.getDescription()).totalMember(anonymousGroup.getTotalMember()).setOffical(anonymousGroup.isOffical());
+				this.groupsSearchRepository.save(group);
+				
+				team.name(anonymousGroup.getName());
+				this.teamSearchRepository.save(team);
+	        	log.debug("Changed anonymous groud for User: {}", group);
+			}              
+        });
+    } 
 
+    /**
+     * Delete user.
+     *
+     * @param login the login
+     */
     public void deleteUser(String login) {
         userRepository.findOneByLogin(login).ifPresent(user -> {
             socialService.deleteUserSocialConnection(user.getLogin());
@@ -215,6 +388,11 @@ public class UserService {
         });
     }
 
+    /**
+     * Change password.
+     *
+     * @param password the password
+     */
     public void changePassword(String password) {
         userRepository.findOneByLogin(SecurityUtils.getCurrentUserLogin()).ifPresent(user -> {
             String encryptedPassword = passwordEncoder.encode(password);
@@ -224,21 +402,44 @@ public class UserService {
         });
     }
 
+    /**
+     * Gets the all managed users.
+     *
+     * @param pageable the pageable
+     * @return the all managed users
+     */
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllManagedUsers(Pageable pageable) {
         return userRepository.findAllByLoginNot(pageable, Constants.ANONYMOUS_USER).map(UserDTO::new);
     }
 
+    /**
+     * Gets the user with authorities by login.
+     *
+     * @param login the login
+     * @return the user with authorities by login
+     */
     @Transactional(readOnly = true)
     public Optional<User> getUserWithAuthoritiesByLogin(String login) {
         return userRepository.findOneWithAuthoritiesByLogin(login);
     }
 
+    /**
+     * Gets the user with authorities.
+     *
+     * @param id the id
+     * @return the user with authorities
+     */
     @Transactional(readOnly = true)
     public User getUserWithAuthorities(Long id) {
         return userRepository.findOneWithAuthoritiesById(id);
     }
 
+    /**
+     * Gets the user with authorities.
+     *
+     * @return the user with authorities
+     */
     @Transactional(readOnly = true)
     public User getUserWithAuthorities() {
         return userRepository.findOneWithAuthoritiesByLogin(SecurityUtils.getCurrentUserLogin()).orElse(null);
@@ -261,9 +462,64 @@ public class UserService {
     }
 
     /**
+     * Gets the authorities.
+     *
      * @return a list of all the authorities
      */
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
     }
+    
+    /**
+     * Create the Custom User as external user information.
+     *
+     * @param user the user
+     */
+    private void createCustomUser(User user) {
+        CustomUserDTO customUserDTO = new CustomUserDTO();
+        customUserDTO.setUserId(user.getId());
+        this.customUserService.save(customUserDTO);
+    }
+
+    /**
+     * Gets the user profile with authorities.
+     *
+     * @return the user profile with authorities
+     */
+    @Transactional(readOnly = true)
+	public ProfileDTO getUserProfileByUserId(Long userId) {
+    	Optional<User> optUser = this.userRepository.findOneById(userId);
+    	if (optUser.isPresent()) {
+    		User user = optUser.get();
+    		ProfileDTO profileDTO = new ProfileDTO();    			
+			Optional<CustomUser> optCustomUser = this.customUserRepository.findOneByUserId(user.getId());
+			CustomUser customUser;
+    		if (optCustomUser.isPresent()) {
+    			customUser = optCustomUser.get();
+    			
+    			// Get profile
+    			CustomUserDTO customUserDTO = this.customUserMapper.toDto(optCustomUser.get());
+    			profileDTO.setProfile(customUserDTO);
+    			
+    			// Get anonymous group
+    			Optional<Groups> optAnonymousGroup = customUser.getLeaders().parallelStream().filter(group -> !group.isOffical()).findFirst();
+    			if (optAnonymousGroup.isPresent()) {
+    				Groups anonymousGroup = optAnonymousGroup.get();
+    				AnonymousGroupDTO anonymousGroupDTO = new AnonymousGroupDTO();
+    				anonymousGroupDTO.setDescription(anonymousGroup.getDescription());
+    				anonymousGroupDTO.setTotalMember(anonymousGroup.getTotalMember());
+    				profileDTO.setAnonymousGroup(anonymousGroupDTO);
+    			}
+    			
+    			// TODO query groups of this user here    			
+    			    			
+    		} else {
+    			customUser = new CustomUser().fullName("").nickname("").user(user);
+    			profileDTO.setProfile(this.customUserMapper.toDto(customUser));    			
+    		}
+			return profileDTO;
+    	} else {
+    		return null;
+    	}
+	}
 }

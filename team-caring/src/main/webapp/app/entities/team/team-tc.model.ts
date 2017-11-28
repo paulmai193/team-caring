@@ -1,0 +1,13 @@
+import { BaseEntity } from './../../shared';
+
+export class TeamTc implements BaseEntity {
+    constructor(
+        public id?: number,
+        public name?: string,
+        public description?: string,
+        public level?: number,
+        public subjectId?: number,
+        public groups?: BaseEntity[],
+    ) {
+    }
+}

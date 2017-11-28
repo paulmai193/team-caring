@@ -1,9 +1,9 @@
 package com.ttth.teamcaring.security;
 
-import com.ttth.teamcaring.config.Constants;
-
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
+
+import com.ttth.teamcaring.config.Constants;
 
 /**
  * Implementation of AuditorAware based on Spring Security.

@@ -1,7 +1,14 @@
 package com.ttth.teamcaring.repository;
 
-import com.ttth.teamcaring.TeamCaringApp;
-import com.ttth.teamcaring.domain.SocialUserConnection;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,25 +16,33 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.social.connect.*;
+import org.springframework.social.connect.ApiAdapter;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.connect.ConnectionData;
+import org.springframework.social.connect.ConnectionKey;
+import org.springframework.social.connect.ConnectionRepository;
+import org.springframework.social.connect.ConnectionValues;
+import org.springframework.social.connect.NoSuchConnectionException;
+import org.springframework.social.connect.NotConnectedException;
+import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.UserProfileBuilder;
 import org.springframework.social.connect.support.ConnectionFactoryRegistry;
 import org.springframework.social.connect.support.OAuth1ConnectionFactory;
 import org.springframework.social.connect.support.OAuth2ConnectionFactory;
 import org.springframework.social.oauth1.OAuth1Operations;
 import org.springframework.social.oauth1.OAuth1ServiceProvider;
-import org.springframework.social.oauth2.*;
+import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.oauth2.GrantType;
+import org.springframework.social.oauth2.OAuth2Operations;
+import org.springframework.social.oauth2.OAuth2Parameters;
+import org.springframework.social.oauth2.OAuth2ServiceProvider;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import com.ttth.teamcaring.TeamCaringApp;
+import com.ttth.teamcaring.domain.SocialUserConnection;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TeamCaringApp.class)

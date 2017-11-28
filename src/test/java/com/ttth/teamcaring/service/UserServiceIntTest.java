@@ -1,11 +1,11 @@
 package com.ttth.teamcaring.service;
 
-import com.ttth.teamcaring.TeamCaringApp;
-import com.ttth.teamcaring.config.Constants;
-import com.ttth.teamcaring.domain.User;
-import com.ttth.teamcaring.repository.UserRepository;
-import com.ttth.teamcaring.service.dto.UserDTO;
-import com.ttth.teamcaring.service.util.RandomUtil;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Before;
@@ -18,12 +18,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.ttth.teamcaring.TeamCaringApp;
+import com.ttth.teamcaring.config.Constants;
+import com.ttth.teamcaring.domain.User;
+import com.ttth.teamcaring.repository.UserRepository;
+import com.ttth.teamcaring.service.dto.UserDTO;
+import com.ttth.teamcaring.service.util.RandomUtil;
 
 /**
  * Test class for the UserResource REST controller.

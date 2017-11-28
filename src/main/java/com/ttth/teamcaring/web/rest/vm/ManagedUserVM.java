@@ -1,10 +1,11 @@
 package com.ttth.teamcaring.web.rest.vm;
 
-import com.ttth.teamcaring.service.dto.UserDTO;
-import javax.validation.constraints.Size;
-
 import java.time.Instant;
 import java.util.Set;
+
+import javax.validation.constraints.Size;
+
+import com.ttth.teamcaring.service.dto.UserDTO;
 
 /**
  * View Model extending the UserDTO, which is meant to be used in the user management UI.

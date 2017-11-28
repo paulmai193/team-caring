@@ -1,0 +1,54 @@
+entity User {
+}
+
+entity CustomUser {
+	fullName String,
+	nickname String,
+	pushToken String
+}
+
+entity Groups {
+	description String,
+	offical Boolean,
+	totalMember Integer
+}
+
+entity GroupsMember {
+	level Integer
+}
+
+entity Team {
+	name String,
+	description String,
+	level Integer
+}
+
+entity Icon {
+	name String
+}
+
+relationship OneToOne {
+	Team{icon} to Icon,
+	CustomUser{user} to User
+}
+
+relationship ManyToMany {
+	Groups{members} to GroupsMember{groups},
+	GroupsMember{members} to CustomUser{members}
+}
+
+relationship OneToMany {
+	Team{group} to Groups,
+	CustomUser{leader} to Groups
+}
+
+// Set pagination options
+paginate * with pagination
+
+dto * with mapstruct
+
+// Set service options to all except few
+service all with serviceImpl
+
+// Set an angular suffix
+angularSuffix * with tc

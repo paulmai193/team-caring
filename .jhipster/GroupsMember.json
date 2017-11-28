@@ -1,0 +1,33 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "members",
+            "relationshipName": "members",
+            "otherEntityName": "customUser",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipType": "many-to-many",
+            "relationshipName": "groups",
+            "otherEntityName": "groups",
+            "ownerSide": false,
+            "otherEntityRelationshipName": "members"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "level",
+            "fieldType": "Integer"
+        }
+    ],
+    "changelogDate": "20171122152650",
+    "entityTableName": "groups_member",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "angularJSSuffix": "tc"
+}

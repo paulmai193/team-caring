@@ -19,11 +19,12 @@ spring:
             enabled: false
         livereload:
             enabled: false
+    ####################### This datasource for develop on Helios server #######################
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://localhost:3306/teamCaring?useUnicode=true&characterEncoding=utf8&useSSL=false
-        username: root
-        password:
+        url: jdbc:mysql://localhost:3306/logia193_teamCaring?useUnicode=true&characterEncoding=utf8&useSSL=false
+        username: logia193_caring
+        password: s6.FF1zLbxdR
         hikari:
             data-source-properties:
                 cachePrepStmts: true

@@ -381,6 +381,7 @@
         <dependency>
             <groupId>org.springframework.social</groupId>
             <artifactId>spring-social-facebook</artifactId>
+            <version>3.0.0.M1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.social</groupId>
@@ -1038,4 +1039,12 @@
             </dependencies>
         </profile>
     </profiles>
+    
+	<repositories>
+		<repository>
+			<id>alfresco-public</id>
+			<url>https://artifacts.alfresco.com/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
+	
 </project>

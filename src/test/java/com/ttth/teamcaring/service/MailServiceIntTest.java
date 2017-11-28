@@ -1,9 +1,17 @@
 package com.ttth.teamcaring.service;
-import com.ttth.teamcaring.config.Constants;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
-import com.ttth.teamcaring.TeamCaringApp;
-import com.ttth.teamcaring.domain.User;
-import io.github.jhipster.config.JHipsterProperties;
+import java.io.ByteArrayOutputStream;
+
+import javax.mail.Multipart;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,15 +27,11 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 
-import javax.mail.Multipart;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.ByteArrayOutputStream;
+import com.ttth.teamcaring.TeamCaringApp;
+import com.ttth.teamcaring.config.Constants;
+import com.ttth.teamcaring.domain.User;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import io.github.jhipster.config.JHipsterProperties;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TeamCaringApp.class)

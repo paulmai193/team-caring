@@ -1,8 +1,9 @@
 package com.ttth.teamcaring;
 
-import com.ttth.teamcaring.config.DefaultProfileUtil;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+
+import com.ttth.teamcaring.config.DefaultProfileUtil;
 
 /**
  * This is a helper Java class that provides an alternative to creating a web.xml.

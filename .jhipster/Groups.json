@@ -1,0 +1,46 @@
+{
+    "fluentMethods": true,
+    "relationships": [
+        {
+            "relationshipType": "one-to-many",
+            "relationshipName": "leader",
+            "otherEntityName": "customUser",
+            "otherEntityRelationshipName": "groups"
+        },
+        {
+            "relationshipType": "many-to-many",
+            "otherEntityRelationshipName": "groups",
+            "relationshipName": "members",
+            "otherEntityName": "groupsMember",
+            "otherEntityField": "id",
+            "ownerSide": true
+        },
+        {
+            "relationshipName": "team",
+            "otherEntityName": "team",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id"
+        }
+    ],
+    "fields": [
+        {
+            "fieldName": "description",
+            "fieldType": "String"
+        },
+        {
+            "fieldName": "offical",
+            "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "totalMember",
+            "fieldType": "Integer"
+        }
+    ],
+    "changelogDate": "20171122152649",
+    "entityTableName": "groups",
+    "dto": "mapstruct",
+    "pagination": "pagination",
+    "service": "serviceImpl",
+    "jpaMetamodelFiltering": false,
+    "angularJSSuffix": "tc"
+}

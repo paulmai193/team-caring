@@ -26,7 +26,7 @@
             <column name="first_name" type="varchar(50)"/>
             <column name="last_name" type="varchar(50)"/>
             <column name="email" type="varchar(100)">
-                <constraints unique="true" nullable="true" uniqueConstraintName="ux_user_email"/>
+                <!-- <constraints unique="true" nullable="true" uniqueConstraintName="ux_user_email"/> EMAIL NOT NEED TO UNIQUE -->
             </column>
             <column name="image_url" type="varchar(256)"/>
             <column name="activated" type="boolean" valueBoolean="false">

@@ -1,10 +1,14 @@
 package com.ttth.teamcaring.web.rest;
 
-import com.ttth.teamcaring.TeamCaringApp;
-import com.ttth.teamcaring.config.audit.AuditEventConverter;
-import com.ttth.teamcaring.domain.PersistentAuditEvent;
-import com.ttth.teamcaring.repository.PersistenceAuditEventRepository;
-import com.ttth.teamcaring.service.AuditEventService;
+import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.Instant;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,12 +24,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.format.DateTimeFormatter;
-
-import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.ttth.teamcaring.TeamCaringApp;
+import com.ttth.teamcaring.config.audit.AuditEventConverter;
+import com.ttth.teamcaring.domain.PersistentAuditEvent;
+import com.ttth.teamcaring.repository.PersistenceAuditEventRepository;
+import com.ttth.teamcaring.service.AuditEventService;
 
 /**
  * Test class for the AuditResource REST controller.

@@ -1,8 +1,6 @@
 package com.ttth.teamcaring.config;
 
-import com.ttth.teamcaring.security.*;
-import com.ttth.teamcaring.security.jwt.*;
-
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
 
-import javax.annotation.PostConstruct;
+import com.ttth.teamcaring.security.AuthoritiesConstants;
+import com.ttth.teamcaring.security.jwt.JWTConfigurer;
+import com.ttth.teamcaring.security.jwt.TokenProvider;
 
 @Configuration
 @Import(SecurityProblemSupport.class)

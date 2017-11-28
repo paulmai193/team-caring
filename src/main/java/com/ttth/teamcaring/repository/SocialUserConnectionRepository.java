@@ -1,10 +1,11 @@
 package com.ttth.teamcaring.repository;
 
-import com.ttth.teamcaring.domain.SocialUserConnection;
-
-import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Set;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.ttth.teamcaring.domain.SocialUserConnection;
 
 /**
  * Spring Data JPA repository for the Social User Connection entity.

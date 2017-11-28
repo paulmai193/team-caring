@@ -1,9 +1,10 @@
 package com.ttth.teamcaring.web.rest.vm;
 
-import com.ttth.teamcaring.config.Constants;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
+import com.ttth.teamcaring.config.Constants;
 
 /**
  * View Model object for storing a user's credentials.
@@ -20,8 +21,17 @@ public class LoginVM {
     private String password;
 
     private Boolean rememberMe;
+    
+    public LoginVM() {
+	}
 
-    public String getUsername() {
+    public LoginVM(String username, String password) {
+		this.username = username;
+		this.password = password;
+		this.rememberMe = true;
+	}
+
+	public String getUsername() {
         return username;
     }
 

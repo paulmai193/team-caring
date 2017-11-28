@@ -1,17 +1,18 @@
 package com.ttth.teamcaring.service.dto;
 
-import com.ttth.teamcaring.config.Constants;
+import java.time.Instant;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import com.ttth.teamcaring.domain.Authority;
-import com.ttth.teamcaring.domain.User;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.*;
-import java.time.Instant;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.ttth.teamcaring.config.Constants;
+import com.ttth.teamcaring.domain.Authority;
+import com.ttth.teamcaring.domain.User;
 
 /**
  * A DTO representing a user, with his authorities.
@@ -119,6 +120,10 @@ public class UserDTO {
 
     public boolean isActivated() {
         return activated;
+    }
+    
+    public void setActivated(boolean isActivated) {
+    	this.activated = isActivated;
     }
 
     public String getLangKey() {

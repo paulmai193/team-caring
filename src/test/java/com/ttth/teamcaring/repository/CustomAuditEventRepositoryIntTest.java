@@ -1,9 +1,16 @@
 package com.ttth.teamcaring.repository;
 
-import com.ttth.teamcaring.TeamCaringApp;
-import com.ttth.teamcaring.config.Constants;
-import com.ttth.teamcaring.config.audit.AuditEventConverter;
-import com.ttth.teamcaring.domain.PersistentAuditEvent;
+import static com.ttth.teamcaring.repository.CustomAuditEventRepository.EVENT_DATA_COLUMN_MAX_LENGTH;
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,15 +23,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpSession;
-import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static com.ttth.teamcaring.repository.CustomAuditEventRepository.EVENT_DATA_COLUMN_MAX_LENGTH;
+import com.ttth.teamcaring.TeamCaringApp;
+import com.ttth.teamcaring.config.Constants;
+import com.ttth.teamcaring.config.audit.AuditEventConverter;
+import com.ttth.teamcaring.domain.PersistentAuditEvent;
 
 /**
  * Test class for the CustomAuditEventRepository class.
