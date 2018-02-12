@@ -1,0 +1,49 @@
+
+<div *ngIf="appointment">
+    <h2><span>Appointment</span> {{appointment.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row-md jh-entity-details">
+        <dt><span>Name</span></dt>
+        <dd>
+            <span>{{appointment.name}}</span>
+        </dd>
+        <dt><span>Description</span></dt>
+        <dd>
+            <span>{{appointment.description}}</span>
+        </dd>
+        <dt><span>Repeat Type</span></dt>
+        <dd>
+            <span>{{appointment.repeatType}}</span>
+        </dd>
+        <dt><span>Time</span></dt>
+        <dd>
+            <span>{{appointment.time | date:'medium'}}</span>
+        </dd>
+        <dt><span>Custom User</span></dt>
+        <dd>
+            <div *ngIf="appointment.customUserId">
+                <a [routerLink]="['/custom-user-tc', appointment.customUserId]">{{appointment.customUserId}}</a>
+            </div>
+        </dd>
+        <dt><span>Team</span></dt>
+        <dd>
+            <div *ngIf="appointment.teamId">
+                <a [routerLink]="['/team-tc', appointment.teamId]">{{appointment.teamId}}</a>
+            </div>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            (click)="previousState()"
+            class="btn btn-info">
+        <span class="fa fa-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button"
+            [routerLink]="['/', { outlets: { popup: 'appointment-tc/'+ appointment.id + '/edit'} }]"
+            replaceUrl="true"
+            class="btn btn-primary">
+        <span class="fa fa-pencil"></span>&nbsp;<span> Edit</span>
+    </button>
+</div>

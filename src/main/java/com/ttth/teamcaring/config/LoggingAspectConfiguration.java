@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.config;
 
 import org.springframework.context.annotation.Bean;
@@ -10,10 +13,22 @@ import com.ttth.teamcaring.aop.logging.LoggingAspect;
 
 import io.github.jhipster.config.JHipsterConstants;
 
+/**
+ * The Class LoggingAspectConfiguration.
+ *
+ * @author Dai Mai
+ */
 @Configuration
 @EnableAspectJAutoProxy
 public class LoggingAspectConfiguration {
 
+    /**
+     * Logging aspect.
+     *
+     * @param env
+     *        the env
+     * @return the logging aspect
+     */
     @Bean
     @Profile(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)
     public LoggingAspect loggingAspect(Environment env) {

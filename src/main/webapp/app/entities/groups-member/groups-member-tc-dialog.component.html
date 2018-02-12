@@ -17,11 +17,24 @@
             <input type="number" class="form-control" name="level" id="field_level"
                 [(ngModel)]="groupsMember.level"  />
         </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_status">Status</label>
+            <input type="number" class="form-control" name="status" id="field_status"
+                [(ngModel)]="groupsMember.status"  />
+        </div>
 
         <div class="form-group">
-            <label for="field_members">Members</label>
-            <select class="form-control" id="field_members" multiple name="members" [(ngModel)]="groupsMember.members">
-                <option [ngValue]="getSelected(groupsMember.members, customUserOption)" *ngFor="let customUserOption of customusers; trackBy: trackCustomUserById">{{customUserOption.id}}</option>
+            <label class="form-control-label" for="field_customUser">Custom User</label>
+            <select class="form-control" id="field_customUser" name="customUser" [(ngModel)]="groupsMember.customUserId" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="customUserOption.id" *ngFor="let customUserOption of customusers; trackBy: trackCustomUserById">{{customUserOption.id}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_groups">Groups</label>
+            <select class="form-control" id="field_groups" name="groups" [(ngModel)]="groupsMember.groupsId" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="groupsOption.id" *ngFor="let groupsOption of groups; trackBy: trackGroupsById">{{groupsOption.id}}</option>
             </select>
         </div>
     </div>

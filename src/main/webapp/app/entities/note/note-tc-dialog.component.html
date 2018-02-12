@@ -1,0 +1,54 @@
+<form name="editForm" role="form" novalidate (ngSubmit)="save()" #editForm="ngForm">
+
+    <div class="modal-header">
+        <h4 class="modal-title" id="myNoteLabel">Create or edit a Note</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true"
+                (click)="clear()">&times;</button>
+    </div>
+    <div class="modal-body">
+        <jhi-alert-error></jhi-alert-error>
+        <div class="form-group" [hidden]="!note.id">
+            <label for="id">ID</label>
+            <input type="text" class="form-control" id="id" name="id"
+                   [(ngModel)]="note.id" readonly />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_general">General</label>
+            <input type="text" class="form-control" name="general" id="field_general"
+                [(ngModel)]="note.general"  />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_separate">Separate</label>
+            <input type="text" class="form-control" name="separate" id="field_separate"
+                [(ngModel)]="note.separate"  />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_reminder">Reminder</label>
+            <input type="text" class="form-control" name="reminder" id="field_reminder"
+                [(ngModel)]="note.reminder"  />
+        </div>
+
+        <div class="form-group">
+            <label class="form-control-label" for="field_customUser">Custom User</label>
+            <select class="form-control" id="field_customUser" name="customUser" [(ngModel)]="note.customUserId" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="customUserOption.id" *ngFor="let customUserOption of customusers; trackBy: trackCustomUserById">{{customUserOption.id}}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_appointment">Appointment</label>
+            <select class="form-control" id="field_appointment" name="appointment" [(ngModel)]="note.appointmentId" >
+                <option [ngValue]="null"></option>
+                <option [ngValue]="appointmentOption.id" *ngFor="let appointmentOption of appointments; trackBy: trackAppointmentById">{{appointmentOption.id}}</option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="clear()">
+            <span class="fa fa-ban"></span>&nbsp;<span>Cancel</span>
+        </button>
+        <button type="submit" [disabled]="editForm.form.invalid || isSaving" class="btn btn-primary">
+            <span class="fa fa-save"></span>&nbsp;<span>Save</span>
+        </button>
+    </div>
+</form>

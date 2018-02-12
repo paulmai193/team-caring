@@ -26,19 +26,20 @@
                 <constraints nullable="true" />
             </column>
 
+            <column name="status" type="integer">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="custom_user_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="groups_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
-        
-        <createTable tableName="groups_member_members">
-            <column name="members_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-            <column name="groups_members_id" type="bigint">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-
-        <addPrimaryKey columnNames="groups_members_id, members_id" tableName="groups_member_members"/>
         
     </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here, do not remove-->

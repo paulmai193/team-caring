@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.web.rest;
 
 import static com.ttth.teamcaring.web.rest.TestUtil.createFormattingConversionService;
@@ -49,74 +52,126 @@ import com.ttth.teamcaring.web.rest.errors.ExceptionTranslator;
 @Ignore
 public class CustomUserResourceIntTest {
 
-    private static final String DEFAULT_FULL_NAME = "AAAAAAAAAA";
-    private static final String UPDATED_FULL_NAME = "BBBBBBBBBB";
+    /** The Constant DEFAULT_FULL_NAME. */
+    private static final String                   DEFAULT_FULL_NAME                = "AAAAAAAAAA";
+    
+    /** The Constant UPDATED_FULL_NAME. */
+    private static final String                   UPDATED_FULL_NAME                = "BBBBBBBBBB";
 
-    private static final String DEFAULT_NICKNAME = "AAAAAAAAAA";
-    private static final String UPDATED_NICKNAME = "BBBBBBBBBB";
+    /** The Constant DEFAULT_NICKNAME. */
+    private static final String                   DEFAULT_NICKNAME                 = "AAAAAAAAAA";
+    
+    /** The Constant UPDATED_NICKNAME. */
+    private static final String                   UPDATED_NICKNAME                 = "BBBBBBBBBB";
 
-    private static final String DEFAULT_PUSH_TOKEN = "AAAAAAAAAA";
-    private static final String UPDATED_PUSH_TOKEN = "BBBBBBBBBB";
+    /** The Constant DEFAULT_PUSH_TOKEN. */
+    private static final String                   DEFAULT_PUSH_TOKEN               = "AAAAAAAAAA";
+    
+    /** The Constant UPDATED_PUSH_TOKEN. */
+    private static final String                   UPDATED_PUSH_TOKEN               = "BBBBBBBBBB";
 
+    /** The Constant DEFAULT_EXTRA_GROUP_NAME. */
+    private static final String                   DEFAULT_EXTRA_GROUP_NAME         = "AAAAAAAAAA";
+    
+    /** The Constant UPDATED_EXTRA_GROUP_NAME. */
+    private static final String                   UPDATED_EXTRA_GROUP_NAME         = "BBBBBBBBBB";
+
+    /** The Constant DEFAULT_EXTRA_GROUP_DESCRIPTION. */
+    private static final String                   DEFAULT_EXTRA_GROUP_DESCRIPTION  = "AAAAAAAAAA";
+    
+    /** The Constant UPDATED_EXTRA_GROUP_DESCRIPTION. */
+    private static final String                   UPDATED_EXTRA_GROUP_DESCRIPTION  = "BBBBBBBBBB";
+
+    /** The Constant DEFAULT_EXTRA_GROUP_TOTAL_MEMBER. */
+    private static final Integer                  DEFAULT_EXTRA_GROUP_TOTAL_MEMBER = 1;
+    
+    /** The Constant UPDATED_EXTRA_GROUP_TOTAL_MEMBER. */
+    private static final Integer                  UPDATED_EXTRA_GROUP_TOTAL_MEMBER = 2;
+
+    /** The custom user repository. */
     @Autowired
-    private CustomUserRepository customUserRepository;
+    private CustomUserRepository                  customUserRepository;
 
+    /** The custom user mapper. */
     @Autowired
-    private CustomUserMapper customUserMapper;
+    private CustomUserMapper                      customUserMapper;
 
+    /** The custom user service. */
     @Autowired
-    private CustomUserService customUserService;
+    private CustomUserService                     customUserService;
 
+    /** The custom user search repository. */
     @Autowired
-    private CustomUserSearchRepository customUserSearchRepository;
+    private CustomUserSearchRepository            customUserSearchRepository;
 
+    /** The jackson message converter. */
     @Autowired
-    private MappingJackson2HttpMessageConverter jacksonMessageConverter;
+    private MappingJackson2HttpMessageConverter   jacksonMessageConverter;
 
+    /** The pageable argument resolver. */
     @Autowired
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
+    /** The exception translator. */
     @Autowired
-    private ExceptionTranslator exceptionTranslator;
+    private ExceptionTranslator                   exceptionTranslator;
 
+    /** The em. */
     @Autowired
-    private EntityManager em;
+    private EntityManager                         em;
 
-    private MockMvc restCustomUserMockMvc;
+    /** The rest custom user mock mvc. */
+    private MockMvc                               restCustomUserMockMvc;
 
-    private CustomUser customUser;
+    /** The custom user. */
+    private CustomUser                            customUser;
 
+    /**
+     * Setup.
+     */
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         final CustomUserResource customUserResource = new CustomUserResource(customUserService);
         this.restCustomUserMockMvc = MockMvcBuilders.standaloneSetup(customUserResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter).build();
+                .setCustomArgumentResolvers(pageableArgumentResolver)
+                .setControllerAdvice(exceptionTranslator)
+                .setConversionService(createFormattingConversionService())
+                .setMessageConverters(jacksonMessageConverter).build();
     }
 
     /**
      * Create an entity for this test.
-     *
+     * 
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
+     *
+     * @param em the em
+     * @return the custom user
      */
     public static CustomUser createEntity(EntityManager em) {
-        CustomUser customUser = new CustomUser()
-            .fullName(DEFAULT_FULL_NAME)
-            .nickname(DEFAULT_NICKNAME)
-            .pushToken(DEFAULT_PUSH_TOKEN);
+        CustomUser customUser = new CustomUser().fullName(DEFAULT_FULL_NAME)
+                .nickname(DEFAULT_NICKNAME).pushToken(DEFAULT_PUSH_TOKEN)
+                .extraGroupName(DEFAULT_EXTRA_GROUP_NAME)
+                .extraGroupDescription(DEFAULT_EXTRA_GROUP_DESCRIPTION)
+                .extraGroupTotalMember(DEFAULT_EXTRA_GROUP_TOTAL_MEMBER);
         return customUser;
     }
 
+    /**
+     * Inits the test.
+     */
     @Before
     public void initTest() {
         customUserSearchRepository.deleteAll();
         customUser = createEntity(em);
     }
 
+    /**
+     * Creates the custom user.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void createCustomUser() throws Exception {
@@ -124,10 +179,10 @@ public class CustomUserResourceIntTest {
 
         // Create the CustomUser
         CustomUserDTO customUserDTO = customUserMapper.toDto(customUser);
-        restCustomUserMockMvc.perform(post("/api/custom-users")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(customUserDTO)))
-            .andExpect(status().isCreated());
+        restCustomUserMockMvc
+                .perform(post("/api/custom-users").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(customUserDTO)))
+                .andExpect(status().isCreated());
 
         // Validate the CustomUser in the database
         List<CustomUser> customUserList = customUserRepository.findAll();
@@ -136,12 +191,22 @@ public class CustomUserResourceIntTest {
         assertThat(testCustomUser.getFullName()).isEqualTo(DEFAULT_FULL_NAME);
         assertThat(testCustomUser.getNickname()).isEqualTo(DEFAULT_NICKNAME);
         assertThat(testCustomUser.getPushToken()).isEqualTo(DEFAULT_PUSH_TOKEN);
+        assertThat(testCustomUser.getExtraGroupName()).isEqualTo(DEFAULT_EXTRA_GROUP_NAME);
+        assertThat(testCustomUser.getExtraGroupDescription())
+                .isEqualTo(DEFAULT_EXTRA_GROUP_DESCRIPTION);
+        assertThat(testCustomUser.getExtraGroupTotalMember())
+                .isEqualTo(DEFAULT_EXTRA_GROUP_TOTAL_MEMBER);
 
         // Validate the CustomUser in Elasticsearch
         CustomUser customUserEs = customUserSearchRepository.findOne(testCustomUser.getId());
         assertThat(customUserEs).isEqualToComparingFieldByField(testCustomUser);
     }
 
+    /**
+     * Creates the custom user with existing id.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void createCustomUserWithExistingId() throws Exception {
@@ -151,17 +216,24 @@ public class CustomUserResourceIntTest {
         customUser.setId(1L);
         CustomUserDTO customUserDTO = customUserMapper.toDto(customUser);
 
-        // An entity with an existing ID cannot be created, so this API call must fail
-        restCustomUserMockMvc.perform(post("/api/custom-users")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(customUserDTO)))
-            .andExpect(status().isBadRequest());
+        // An entity with an existing ID cannot be created, so this API call
+        // must fail
+        restCustomUserMockMvc
+                .perform(post("/api/custom-users").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(customUserDTO)))
+                .andExpect(status().isBadRequest());
 
         // Validate the CustomUser in the database
         List<CustomUser> customUserList = customUserRepository.findAll();
         assertThat(customUserList).hasSize(databaseSizeBeforeCreate);
     }
 
+    /**
+     * Gets the all custom users.
+     *
+     * @return the all custom users
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void getAllCustomUsers() throws Exception {
@@ -170,14 +242,27 @@ public class CustomUserResourceIntTest {
 
         // Get all the customUserList
         restCustomUserMockMvc.perform(get("/api/custom-users?sort=id,desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(customUser.getId().intValue())))
-            .andExpect(jsonPath("$.[*].fullName").value(hasItem(DEFAULT_FULL_NAME.toString())))
-            .andExpect(jsonPath("$.[*].nickname").value(hasItem(DEFAULT_NICKNAME.toString())))
-            .andExpect(jsonPath("$.[*].pushToken").value(hasItem(DEFAULT_PUSH_TOKEN.toString())));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.[*].id").value(hasItem(customUser.getId().intValue())))
+                .andExpect(jsonPath("$.[*].fullName").value(hasItem(DEFAULT_FULL_NAME.toString())))
+                .andExpect(jsonPath("$.[*].nickname").value(hasItem(DEFAULT_NICKNAME.toString())))
+                .andExpect(
+                        jsonPath("$.[*].pushToken").value(hasItem(DEFAULT_PUSH_TOKEN.toString())))
+                .andExpect(jsonPath("$.[*].extraGroupName")
+                        .value(hasItem(DEFAULT_EXTRA_GROUP_NAME.toString())))
+                .andExpect(jsonPath("$.[*].extraGroupDescription")
+                        .value(hasItem(DEFAULT_EXTRA_GROUP_DESCRIPTION.toString())))
+                .andExpect(jsonPath("$.[*].extraGroupTotalMember")
+                        .value(hasItem(DEFAULT_EXTRA_GROUP_TOTAL_MEMBER)));
     }
 
+    /**
+     * Gets the custom user.
+     *
+     * @return the custom user
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void getCustomUser() throws Exception {
@@ -186,22 +271,38 @@ public class CustomUserResourceIntTest {
 
         // Get the customUser
         restCustomUserMockMvc.perform(get("/api/custom-users/{id}", customUser.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.id").value(customUser.getId().intValue()))
-            .andExpect(jsonPath("$.fullName").value(DEFAULT_FULL_NAME.toString()))
-            .andExpect(jsonPath("$.nickname").value(DEFAULT_NICKNAME.toString()))
-            .andExpect(jsonPath("$.pushToken").value(DEFAULT_PUSH_TOKEN.toString()));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.id").value(customUser.getId().intValue()))
+                .andExpect(jsonPath("$.fullName").value(DEFAULT_FULL_NAME.toString()))
+                .andExpect(jsonPath("$.nickname").value(DEFAULT_NICKNAME.toString()))
+                .andExpect(jsonPath("$.pushToken").value(DEFAULT_PUSH_TOKEN.toString()))
+                .andExpect(jsonPath("$.extraGroupName").value(DEFAULT_EXTRA_GROUP_NAME.toString()))
+                .andExpect(jsonPath("$.extraGroupDescription")
+                        .value(DEFAULT_EXTRA_GROUP_DESCRIPTION.toString()))
+                .andExpect(jsonPath("$.extraGroupTotalMember")
+                        .value(DEFAULT_EXTRA_GROUP_TOTAL_MEMBER));
     }
 
+    /**
+     * Gets the non existing custom user.
+     *
+     * @return the non existing custom user
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void getNonExistingCustomUser() throws Exception {
         // Get the customUser
         restCustomUserMockMvc.perform(get("/api/custom-users/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
+    /**
+     * Update custom user.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void updateCustomUser() throws Exception {
@@ -212,16 +313,16 @@ public class CustomUserResourceIntTest {
 
         // Update the customUser
         CustomUser updatedCustomUser = customUserRepository.findOne(customUser.getId());
-        updatedCustomUser
-            .fullName(UPDATED_FULL_NAME)
-            .nickname(UPDATED_NICKNAME)
-            .pushToken(UPDATED_PUSH_TOKEN);
+        updatedCustomUser.fullName(UPDATED_FULL_NAME).nickname(UPDATED_NICKNAME)
+                .pushToken(UPDATED_PUSH_TOKEN).extraGroupName(UPDATED_EXTRA_GROUP_NAME)
+                .extraGroupDescription(UPDATED_EXTRA_GROUP_DESCRIPTION)
+                .extraGroupTotalMember(UPDATED_EXTRA_GROUP_TOTAL_MEMBER);
         CustomUserDTO customUserDTO = customUserMapper.toDto(updatedCustomUser);
 
-        restCustomUserMockMvc.perform(put("/api/custom-users")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(customUserDTO)))
-            .andExpect(status().isOk());
+        restCustomUserMockMvc
+                .perform(put("/api/custom-users").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(customUserDTO)))
+                .andExpect(status().isOk());
 
         // Validate the CustomUser in the database
         List<CustomUser> customUserList = customUserRepository.findAll();
@@ -230,12 +331,22 @@ public class CustomUserResourceIntTest {
         assertThat(testCustomUser.getFullName()).isEqualTo(UPDATED_FULL_NAME);
         assertThat(testCustomUser.getNickname()).isEqualTo(UPDATED_NICKNAME);
         assertThat(testCustomUser.getPushToken()).isEqualTo(UPDATED_PUSH_TOKEN);
+        assertThat(testCustomUser.getExtraGroupName()).isEqualTo(UPDATED_EXTRA_GROUP_NAME);
+        assertThat(testCustomUser.getExtraGroupDescription())
+                .isEqualTo(UPDATED_EXTRA_GROUP_DESCRIPTION);
+        assertThat(testCustomUser.getExtraGroupTotalMember())
+                .isEqualTo(UPDATED_EXTRA_GROUP_TOTAL_MEMBER);
 
         // Validate the CustomUser in Elasticsearch
         CustomUser customUserEs = customUserSearchRepository.findOne(testCustomUser.getId());
         assertThat(customUserEs).isEqualToComparingFieldByField(testCustomUser);
     }
 
+    /**
+     * Update non existing custom user.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void updateNonExistingCustomUser() throws Exception {
@@ -244,17 +355,23 @@ public class CustomUserResourceIntTest {
         // Create the CustomUser
         CustomUserDTO customUserDTO = customUserMapper.toDto(customUser);
 
-        // If the entity doesn't have an ID, it will be created instead of just being updated
-        restCustomUserMockMvc.perform(put("/api/custom-users")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(customUserDTO)))
-            .andExpect(status().isCreated());
+        // If the entity doesn't have an ID, it will be created instead of just
+        // being updated
+        restCustomUserMockMvc
+                .perform(put("/api/custom-users").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(customUserDTO)))
+                .andExpect(status().isCreated());
 
         // Validate the CustomUser in the database
         List<CustomUser> customUserList = customUserRepository.findAll();
         assertThat(customUserList).hasSize(databaseSizeBeforeUpdate + 1);
     }
 
+    /**
+     * Delete custom user.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void deleteCustomUser() throws Exception {
@@ -265,8 +382,7 @@ public class CustomUserResourceIntTest {
 
         // Get the customUser
         restCustomUserMockMvc.perform(delete("/api/custom-users/{id}", customUser.getId())
-            .accept(TestUtil.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
+                .accept(TestUtil.APPLICATION_JSON_UTF8)).andExpect(status().isOk());
 
         // Validate Elasticsearch is empty
         boolean customUserExistsInEs = customUserSearchRepository.exists(customUser.getId());
@@ -277,6 +393,11 @@ public class CustomUserResourceIntTest {
         assertThat(customUserList).hasSize(databaseSizeBeforeDelete - 1);
     }
 
+    /**
+     * Search custom user.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void searchCustomUser() throws Exception {
@@ -285,15 +406,28 @@ public class CustomUserResourceIntTest {
         customUserSearchRepository.save(customUser);
 
         // Search the customUser
-        restCustomUserMockMvc.perform(get("/api/_search/custom-users?query=id:" + customUser.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(customUser.getId().intValue())))
-            .andExpect(jsonPath("$.[*].fullName").value(hasItem(DEFAULT_FULL_NAME.toString())))
-            .andExpect(jsonPath("$.[*].nickname").value(hasItem(DEFAULT_NICKNAME.toString())))
-            .andExpect(jsonPath("$.[*].pushToken").value(hasItem(DEFAULT_PUSH_TOKEN.toString())));
+        restCustomUserMockMvc
+                .perform(get("/api/_search/custom-users?query=id:" + customUser.getId()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.[*].id").value(hasItem(customUser.getId().intValue())))
+                .andExpect(jsonPath("$.[*].fullName").value(hasItem(DEFAULT_FULL_NAME.toString())))
+                .andExpect(jsonPath("$.[*].nickname").value(hasItem(DEFAULT_NICKNAME.toString())))
+                .andExpect(
+                        jsonPath("$.[*].pushToken").value(hasItem(DEFAULT_PUSH_TOKEN.toString())))
+                .andExpect(jsonPath("$.[*].extraGroupName")
+                        .value(hasItem(DEFAULT_EXTRA_GROUP_NAME.toString())))
+                .andExpect(jsonPath("$.[*].extraGroupDescription")
+                        .value(hasItem(DEFAULT_EXTRA_GROUP_DESCRIPTION.toString())))
+                .andExpect(jsonPath("$.[*].extraGroupTotalMember")
+                        .value(hasItem(DEFAULT_EXTRA_GROUP_TOTAL_MEMBER)));
     }
 
+    /**
+     * Equals verifier.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void equalsVerifier() throws Exception {
@@ -309,6 +443,11 @@ public class CustomUserResourceIntTest {
         assertThat(customUser1).isNotEqualTo(customUser2);
     }
 
+    /**
+     * Dto equals verifier.
+     *
+     * @throws Exception the exception
+     */
     @Test
     @Transactional
     public void dtoEqualsVerifier() throws Exception {
@@ -325,6 +464,9 @@ public class CustomUserResourceIntTest {
         assertThat(customUserDTO1).isNotEqualTo(customUserDTO2);
     }
 
+    /**
+     * Test entity from id.
+     */
     @Test
     @Transactional
     public void testEntityFromId() {

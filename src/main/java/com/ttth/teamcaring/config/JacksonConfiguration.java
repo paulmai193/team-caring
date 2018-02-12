@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.config;
 
 import org.springframework.context.annotation.Bean;
@@ -8,9 +11,19 @@ import org.zalando.problem.validation.ConstraintViolationProblemModule;
 import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 
+/**
+ * The Class JacksonConfiguration.
+ *
+ * @author Dai Mai
+ */
 @Configuration
 public class JacksonConfiguration {
 
+    /**
+     * Hibernate 5 module.
+     *
+     * @return the hibernate 5 module
+     */
     /*
      * Support for Hibernate types in Jackson.
      */
@@ -19,6 +32,11 @@ public class JacksonConfiguration {
         return new Hibernate5Module();
     }
 
+    /**
+     * Afterburner module.
+     *
+     * @return the afterburner module
+     */
     /*
      * Jackson Afterburner module to speed up serialization/deserialization.
      */
@@ -27,6 +45,11 @@ public class JacksonConfiguration {
         return new AfterburnerModule();
     }
 
+    /**
+     * Problem module.
+     *
+     * @return the problem module
+     */
     /*
      * Module for serialization/deserialization of RFC7807 Problem.
      */
@@ -35,6 +58,11 @@ public class JacksonConfiguration {
         return new ProblemModule();
     }
 
+    /**
+     * Constraint violation problem module.
+     *
+     * @return the constraint violation problem module
+     */
     /*
      * Module for serialization/deserialization of ConstraintViolationProblem.
      */

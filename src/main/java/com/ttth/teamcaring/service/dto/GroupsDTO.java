@@ -1,91 +1,113 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.service.dto;
 
-
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * A DTO for the Groups entity.
+ *
+ * @author Dai Mai
  */
 public class GroupsDTO implements Serializable {
 
+    /** The id. */
     private Long id;
 
-    private String description;
+    /** The leader id. */
+    private Long leaderId;
 
-    @JsonIgnore
-    private Boolean offical;
-
-    private Integer totalMember;
-
-    @JsonIgnore
-    private Long customUserId;
-
-    private Set<GroupsMemberDTO> members = new HashSet<>();
-
-    @JsonIgnore
+    /** The team id. */
     private Long teamId;
 
+    /**
+     * Gets the id.
+     *
+     * @return the id
+     */
     public Long getId() {
         return id;
     }
 
+    /**
+     * Sets the id.
+     *
+     * @param id
+     *        the new id
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    /**
+     * Gets the leader id.
+     *
+     * @return the leader id
+     */
+    public Long getLeaderId() {
+        return leaderId;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * Sets the leader id.
+     *
+     * @param customUserId
+     *        the new leader id
+     */
+    public void setLeaderId(Long customUserId) {
+        this.leaderId = customUserId;
     }
 
-    public Boolean isOffical() {
-        return offical;
+    /**
+     * Leader id.
+     *
+     * @param customUserId
+     *        the custom user id
+     * @return the groups DTO
+     */
+    public GroupsDTO leaderId(Long customUserId) {
+        this.setLeaderId(customUserId);
+        return this;
     }
 
-    public void setOffical(Boolean offical) {
-        this.offical = offical;
-    }
-
-    public Integer getTotalMember() {
-        return totalMember;
-    }
-
-    public void setTotalMember(Integer totalMember) {
-        this.totalMember = totalMember;
-    }
-
-    public Long getCustomUserId() {
-        return customUserId;
-    }
-
-    public void setCustomUserId(Long customUserId) {
-        this.customUserId = customUserId;
-    }
-
-    public Set<GroupsMemberDTO> getMembers() {
-        return members;
-    }
-
-    public void setMembers(Set<GroupsMemberDTO> groupsMembers) {
-        this.members = groupsMembers;
-    }
-
+    /**
+     * Gets the team id.
+     *
+     * @return the team id
+     */
     public Long getTeamId() {
         return teamId;
     }
 
+    /**
+     * Sets the team id.
+     *
+     * @param teamId
+     *        the new team id
+     */
     public void setTeamId(Long teamId) {
         this.teamId = teamId;
     }
 
+    /**
+     * Team id.
+     *
+     * @param teamId
+     *        the team id
+     * @return the groups DTO
+     */
+    public GroupsDTO teamId(Long teamId) {
+        this.setTeamId(teamId);
+        return this;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -96,24 +118,29 @@ public class GroupsDTO implements Serializable {
         }
 
         GroupsDTO groupsDTO = (GroupsDTO) o;
-        if(groupsDTO.getId() == null || getId() == null) {
+        if (groupsDTO.getId() == null || getId() == null) {
             return false;
         }
         return Objects.equals(getId(), groupsDTO.getId());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(getId());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return "GroupsDTO{" +
-            "id=" + getId() +
-            ", description='" + getDescription() + "'" +
-            ", offical='" + isOffical() + "'" +
-            ", totalMember='" + getTotalMember() + "'" +
-            "}";
+        return "GroupsDTO{" + "id=" + getId() + "}";
     }
 }

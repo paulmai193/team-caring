@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.web.rest;
 
 import static com.ttth.teamcaring.web.rest.TestUtil.createFormattingConversionService;
@@ -49,74 +52,88 @@ import com.ttth.teamcaring.web.rest.errors.ExceptionTranslator;
 @Ignore
 public class GroupsResourceIntTest {
 
-    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
-    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
-
-    private static final Boolean DEFAULT_OFFICAL = false;
-    private static final Boolean UPDATED_OFFICAL = true;
-
-    private static final Integer DEFAULT_TOTAL_MEMBER = 1;
-    private static final Integer UPDATED_TOTAL_MEMBER = 2;
-
+    /** The groups repository. */
     @Autowired
-    private GroupsRepository groupsRepository;
+    private GroupsRepository                      groupsRepository;
 
+    /** The groups mapper. */
     @Autowired
-    private GroupsMapper groupsMapper;
+    private GroupsMapper                          groupsMapper;
 
+    /** The groups service. */
     @Autowired
-    private GroupsService groupsService;
+    private GroupsService                         groupsService;
 
+    /** The groups search repository. */
     @Autowired
-    private GroupsSearchRepository groupsSearchRepository;
+    private GroupsSearchRepository                groupsSearchRepository;
 
+    /** The jackson message converter. */
     @Autowired
-    private MappingJackson2HttpMessageConverter jacksonMessageConverter;
+    private MappingJackson2HttpMessageConverter   jacksonMessageConverter;
 
+    /** The pageable argument resolver. */
     @Autowired
     private PageableHandlerMethodArgumentResolver pageableArgumentResolver;
 
+    /** The exception translator. */
     @Autowired
-    private ExceptionTranslator exceptionTranslator;
+    private ExceptionTranslator                   exceptionTranslator;
 
+    /** The em. */
     @Autowired
-    private EntityManager em;
+    private EntityManager                         em;
 
-    private MockMvc restGroupsMockMvc;
+    /** The rest groups mock mvc. */
+    private MockMvc                               restGroupsMockMvc;
 
-    private Groups groups;
+    /** The groups. */
+    private Groups                                groups;
 
+    /**
+     * Setup.
+     */
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
         final GroupsResource groupsResource = new GroupsResource(groupsService);
         this.restGroupsMockMvc = MockMvcBuilders.standaloneSetup(groupsResource)
-            .setCustomArgumentResolvers(pageableArgumentResolver)
-            .setControllerAdvice(exceptionTranslator)
-            .setConversionService(createFormattingConversionService())
-            .setMessageConverters(jacksonMessageConverter).build();
+                .setCustomArgumentResolvers(pageableArgumentResolver)
+                .setControllerAdvice(exceptionTranslator)
+                .setConversionService(createFormattingConversionService())
+                .setMessageConverters(jacksonMessageConverter).build();
     }
 
     /**
      * Create an entity for this test.
-     *
+     * 
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
+     *
+     * @param em
+     *        the em
+     * @return the groups
      */
     public static Groups createEntity(EntityManager em) {
-        Groups groups = new Groups()
-            .description(DEFAULT_DESCRIPTION)
-            .offical(DEFAULT_OFFICAL)
-            .totalMember(DEFAULT_TOTAL_MEMBER);
+        Groups groups = new Groups();
         return groups;
     }
 
+    /**
+     * Inits the test.
+     */
     @Before
     public void initTest() {
         groupsSearchRepository.deleteAll();
         groups = createEntity(em);
     }
 
+    /**
+     * Creates the groups.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void createGroups() throws Exception {
@@ -124,24 +141,27 @@ public class GroupsResourceIntTest {
 
         // Create the Groups
         GroupsDTO groupsDTO = groupsMapper.toDto(groups);
-        restGroupsMockMvc.perform(post("/api/groups")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
-            .andExpect(status().isCreated());
+        restGroupsMockMvc
+                .perform(post("/api/groups").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
+                .andExpect(status().isCreated());
 
         // Validate the Groups in the database
         List<Groups> groupsList = groupsRepository.findAll();
         assertThat(groupsList).hasSize(databaseSizeBeforeCreate + 1);
         Groups testGroups = groupsList.get(groupsList.size() - 1);
-        assertThat(testGroups.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
-        assertThat(testGroups.isOffical()).isEqualTo(DEFAULT_OFFICAL);
-        assertThat(testGroups.getTotalMember()).isEqualTo(DEFAULT_TOTAL_MEMBER);
 
         // Validate the Groups in Elasticsearch
         Groups groupsEs = groupsSearchRepository.findOne(testGroups.getId());
         assertThat(groupsEs).isEqualToComparingFieldByField(testGroups);
     }
 
+    /**
+     * Creates the groups with existing id.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void createGroupsWithExistingId() throws Exception {
@@ -151,17 +171,25 @@ public class GroupsResourceIntTest {
         groups.setId(1L);
         GroupsDTO groupsDTO = groupsMapper.toDto(groups);
 
-        // An entity with an existing ID cannot be created, so this API call must fail
-        restGroupsMockMvc.perform(post("/api/groups")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
-            .andExpect(status().isBadRequest());
+        // An entity with an existing ID cannot be created, so this API call
+        // must fail
+        restGroupsMockMvc
+                .perform(post("/api/groups").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
+                .andExpect(status().isBadRequest());
 
         // Validate the Groups in the database
         List<Groups> groupsList = groupsRepository.findAll();
         assertThat(groupsList).hasSize(databaseSizeBeforeCreate);
     }
 
+    /**
+     * Gets the all groups.
+     *
+     * @return the all groups
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void getAllGroups() throws Exception {
@@ -169,15 +197,18 @@ public class GroupsResourceIntTest {
         groupsRepository.saveAndFlush(groups);
 
         // Get all the groupsList
-        restGroupsMockMvc.perform(get("/api/groups?sort=id,desc"))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(groups.getId().intValue())))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
-            .andExpect(jsonPath("$.[*].offical").value(hasItem(DEFAULT_OFFICAL.booleanValue())))
-            .andExpect(jsonPath("$.[*].totalMember").value(hasItem(DEFAULT_TOTAL_MEMBER)));
+        restGroupsMockMvc.perform(get("/api/groups?sort=id,desc")).andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.[*].id").value(hasItem(groups.getId().intValue())));
     }
 
+    /**
+     * Gets the groups.
+     *
+     * @return the groups
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void getGroups() throws Exception {
@@ -186,22 +217,32 @@ public class GroupsResourceIntTest {
 
         // Get the groups
         restGroupsMockMvc.perform(get("/api/groups/{id}", groups.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.id").value(groups.getId().intValue()))
-            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
-            .andExpect(jsonPath("$.offical").value(DEFAULT_OFFICAL.booleanValue()))
-            .andExpect(jsonPath("$.totalMember").value(DEFAULT_TOTAL_MEMBER));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.id").value(groups.getId().intValue()));
     }
 
+    /**
+     * Gets the non existing groups.
+     *
+     * @return the non existing groups
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void getNonExistingGroups() throws Exception {
         // Get the groups
         restGroupsMockMvc.perform(get("/api/groups/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+                .andExpect(status().isNotFound());
     }
 
+    /**
+     * Update groups.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void updateGroups() throws Exception {
@@ -212,30 +253,29 @@ public class GroupsResourceIntTest {
 
         // Update the groups
         Groups updatedGroups = groupsRepository.findOne(groups.getId());
-        updatedGroups
-            .description(UPDATED_DESCRIPTION)
-            .offical(UPDATED_OFFICAL)
-            .totalMember(UPDATED_TOTAL_MEMBER);
         GroupsDTO groupsDTO = groupsMapper.toDto(updatedGroups);
 
-        restGroupsMockMvc.perform(put("/api/groups")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
-            .andExpect(status().isOk());
+        restGroupsMockMvc
+                .perform(put("/api/groups").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
+                .andExpect(status().isOk());
 
         // Validate the Groups in the database
         List<Groups> groupsList = groupsRepository.findAll();
         assertThat(groupsList).hasSize(databaseSizeBeforeUpdate);
         Groups testGroups = groupsList.get(groupsList.size() - 1);
-        assertThat(testGroups.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
-        assertThat(testGroups.isOffical()).isEqualTo(UPDATED_OFFICAL);
-        assertThat(testGroups.getTotalMember()).isEqualTo(UPDATED_TOTAL_MEMBER);
 
         // Validate the Groups in Elasticsearch
         Groups groupsEs = groupsSearchRepository.findOne(testGroups.getId());
         assertThat(groupsEs).isEqualToComparingFieldByField(testGroups);
     }
 
+    /**
+     * Update non existing groups.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void updateNonExistingGroups() throws Exception {
@@ -244,17 +284,24 @@ public class GroupsResourceIntTest {
         // Create the Groups
         GroupsDTO groupsDTO = groupsMapper.toDto(groups);
 
-        // If the entity doesn't have an ID, it will be created instead of just being updated
-        restGroupsMockMvc.perform(put("/api/groups")
-            .contentType(TestUtil.APPLICATION_JSON_UTF8)
-            .content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
-            .andExpect(status().isCreated());
+        // If the entity doesn't have an ID, it will be created instead of just
+        // being updated
+        restGroupsMockMvc
+                .perform(put("/api/groups").contentType(TestUtil.APPLICATION_JSON_UTF8)
+                        .content(TestUtil.convertObjectToJsonBytes(groupsDTO)))
+                .andExpect(status().isCreated());
 
         // Validate the Groups in the database
         List<Groups> groupsList = groupsRepository.findAll();
         assertThat(groupsList).hasSize(databaseSizeBeforeUpdate + 1);
     }
 
+    /**
+     * Delete groups.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void deleteGroups() throws Exception {
@@ -264,9 +311,9 @@ public class GroupsResourceIntTest {
         int databaseSizeBeforeDelete = groupsRepository.findAll().size();
 
         // Get the groups
-        restGroupsMockMvc.perform(delete("/api/groups/{id}", groups.getId())
-            .accept(TestUtil.APPLICATION_JSON_UTF8))
-            .andExpect(status().isOk());
+        restGroupsMockMvc.perform(
+                delete("/api/groups/{id}", groups.getId()).accept(TestUtil.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk());
 
         // Validate Elasticsearch is empty
         boolean groupsExistsInEs = groupsSearchRepository.exists(groups.getId());
@@ -277,6 +324,12 @@ public class GroupsResourceIntTest {
         assertThat(groupsList).hasSize(databaseSizeBeforeDelete - 1);
     }
 
+    /**
+     * Search groups.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void searchGroups() throws Exception {
@@ -286,14 +339,17 @@ public class GroupsResourceIntTest {
 
         // Search the groups
         restGroupsMockMvc.perform(get("/api/_search/groups?query=id:" + groups.getId()))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-            .andExpect(jsonPath("$.[*].id").value(hasItem(groups.getId().intValue())))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
-            .andExpect(jsonPath("$.[*].offical").value(hasItem(DEFAULT_OFFICAL.booleanValue())))
-            .andExpect(jsonPath("$.[*].totalMember").value(hasItem(DEFAULT_TOTAL_MEMBER)));
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(jsonPath("$.[*].id").value(hasItem(groups.getId().intValue())));
     }
 
+    /**
+     * Equals verifier.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void equalsVerifier() throws Exception {
@@ -309,6 +365,12 @@ public class GroupsResourceIntTest {
         assertThat(groups1).isNotEqualTo(groups2);
     }
 
+    /**
+     * Dto equals verifier.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     @Transactional
     public void dtoEqualsVerifier() throws Exception {
@@ -325,6 +387,9 @@ public class GroupsResourceIntTest {
         assertThat(groupsDTO1).isNotEqualTo(groupsDTO2);
     }
 
+    /**
+     * Test entity from id.
+     */
     @Test
     @Transactional
     public void testEntityFromId() {

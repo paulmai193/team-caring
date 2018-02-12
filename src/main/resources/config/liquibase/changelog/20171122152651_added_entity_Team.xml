@@ -33,9 +33,31 @@
             <column name="jhi_level" type="integer">
                 <constraints nullable="true" />
             </column>
-            <column name="icon_id" type="bigint">
-                <constraints unique="true" nullable="true" />
+
+            <column name="total_member" type="integer">
+                <constraints nullable="true" />
             </column>
+
+            <column name="extra_group_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="extra_group_description" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="extra_group_total_member" type="integer">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="owner_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="icon_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
         

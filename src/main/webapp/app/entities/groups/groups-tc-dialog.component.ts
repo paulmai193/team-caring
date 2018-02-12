@@ -10,7 +10,6 @@ import { GroupsTc } from './groups-tc.model';
 import { GroupsTcPopupService } from './groups-tc-popup.service';
 import { GroupsTcService } from './groups-tc.service';
 import { CustomUserTc, CustomUserTcService } from '../custom-user';
-import { GroupsMemberTc, GroupsMemberTcService } from '../groups-member';
 import { TeamTc, TeamTcService } from '../team';
 import { ResponseWrapper } from '../../shared';
 
@@ -25,8 +24,6 @@ export class GroupsTcDialogComponent implements OnInit {
 
     customusers: CustomUserTc[];
 
-    groupsmembers: GroupsMemberTc[];
-
     teams: TeamTc[];
 
     constructor(
@@ -34,7 +31,6 @@ export class GroupsTcDialogComponent implements OnInit {
         private jhiAlertService: JhiAlertService,
         private groupsService: GroupsTcService,
         private customUserService: CustomUserTcService,
-        private groupsMemberService: GroupsMemberTcService,
         private teamService: TeamTcService,
         private eventManager: JhiEventManager
     ) {
@@ -44,8 +40,6 @@ export class GroupsTcDialogComponent implements OnInit {
         this.isSaving = false;
         this.customUserService.query()
             .subscribe((res: ResponseWrapper) => { this.customusers = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
-        this.groupsMemberService.query()
-            .subscribe((res: ResponseWrapper) => { this.groupsmembers = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
         this.teamService.query()
             .subscribe((res: ResponseWrapper) => { this.teams = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
     }
@@ -88,23 +82,8 @@ export class GroupsTcDialogComponent implements OnInit {
         return item.id;
     }
 
-    trackGroupsMemberById(index: number, item: GroupsMemberTc) {
-        return item.id;
-    }
-
     trackTeamById(index: number, item: TeamTc) {
         return item.id;
-    }
-
-    getSelected(selectedVals: Array<any>, option: any) {
-        if (selectedVals) {
-            for (let i = 0; i < selectedVals.length; i++) {
-                if (option.id === selectedVals[i].id) {
-                    return selectedVals[i];
-                }
-            }
-        }
-        return option;
     }
 }
 

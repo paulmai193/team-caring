@@ -31,6 +31,9 @@
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
             <th jhiSortBy="id"><span>ID</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="level"><span>Level</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="status"><span>Status</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="customUserId"><span>Custom User</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="groupsId"><span>Groups</span> <span class="fa fa-sort"></span></th>
             <th></th>
             </tr>
             </thead>
@@ -38,6 +41,17 @@
             <tr *ngFor="let groupsMember of groupsMembers ;trackBy: trackId">
                 <td><a [routerLink]="['../groups-member-tc', groupsMember.id ]">{{groupsMember.id}}</a></td>
                 <td>{{groupsMember.level}}</td>
+                <td>{{groupsMember.status}}</td>
+                <td>
+                    <div *ngIf="groupsMember.customUserId">
+                        <a [routerLink]="['../custom-user-tc', groupsMember.customUserId  ]" >{{groupsMember.customUserId}}</a>
+                    </div>
+                </td>
+                <td>
+                    <div *ngIf="groupsMember.groupsId">
+                        <a [routerLink]="['../groups-tc', groupsMember.groupsId  ]" >{{groupsMember.groupsId}}</a>
+                    </div>
+                </td>
                 <td class="text-right">
                     <div class="btn-group flex-btn-group-container">
                         <button type="submit"

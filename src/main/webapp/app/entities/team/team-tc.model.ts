@@ -6,8 +6,14 @@ export class TeamTc implements BaseEntity {
         public name?: string,
         public description?: string,
         public level?: number,
-        public iconId?: number,
+        public totalMember?: number,
+        public extraGroupName?: string,
+        public extraGroupDescription?: string,
+        public extraGroupTotalMember?: number,
         public groups?: BaseEntity[],
+        public appointments?: BaseEntity[],
+        public ownerId?: number,
+        public iconId?: number,
     ) {
     }
 }

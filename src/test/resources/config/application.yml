@@ -31,7 +31,7 @@ spring:
         database-platform: io.github.jhipster.domain.util.FixedH2Dialect
         database: H2
         open-in-view: false
-        show-sql: false
+        show-sql: true
         hibernate:
             ddl-auto: none
             naming:
@@ -119,3 +119,8 @@ jhipster:
 # ===================================================================
 
 application:
+    fcm:
+        key: AAAAjLIuf7s:APA91bEPlfHIX7m2XaJ9WkUi_FCvOx7yVeX-DgAijBkRsx71UwWva2TwovHJk2GOAXB3kpoioUQVm_twy-FckoKyM7L9pGitsLpN1AleJzIw1nuuHryFvF7svnpeCH_1sj98JA9WaRW3
+        url: https://fcm.googleapis.com/fcm/send
+        icon: https://firebasestorage.googleapis.com/v0/b/teamcaring-ae3ae.appspot.com/o/static%2Fteam-map-icon.png?alt=media&token=904a59ca-bb83-4c6f-bc54-5f6f183b5a70
+

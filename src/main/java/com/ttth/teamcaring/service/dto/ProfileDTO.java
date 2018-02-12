@@ -1,54 +1,116 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.service.dto;
 
-import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * The Class ProfileDTO.
  *
  * @author Dai Mai
  */
-public class ProfileDTO implements Serializable {
-	
-	/** The anonymous group. */
-	private AnonymousGroupDTO anonymousGroup;
-	
-	/** The profile. */
-	private CustomUserDTO profile;
+public class ProfileDTO extends CustomUserDTO {
 
-	/**
-	 * Gets the anonymous group.
-	 *
-	 * @return the anonymousGroup
-	 */
-	public AnonymousGroupDTO getAnonymousGroup() {
-		return anonymousGroup;
-	}
+    /** The number appointments. */
+    private int                   numberAppointments = 0;
 
-	/**
-	 * Sets the anonymous group.
-	 *
-	 * @param anonymousGroup the anonymousGroup to set
-	 */
-	public void setAnonymousGroup(AnonymousGroupDTO anonymousGroup) {
-		this.anonymousGroup = anonymousGroup;
-	}
+    /** The members. */
+    private Set<ProfileDTO>       members            = new HashSet<>();
 
-	/**
-	 * Gets the profile.
-	 *
-	 * @return the profile
-	 */
-	public CustomUserDTO getProfile() {
-		return profile;
-	}
+    /** The joined team. */
+    private SimpleGroupsMemberDTO joinedTeam;
 
-	/**
-	 * Sets the profile.
-	 *
-	 * @param profile the profile to set
-	 */
-	public void setProfile(CustomUserDTO profile) {
-		this.profile = profile;
-	}
-	
+    /**
+     * Gets the number appointments.
+     *
+     * @return the numberAppointments
+     */
+    public int getNumberAppointments() {
+        return numberAppointments;
+    }
+
+    /**
+     * Sets the number appointments.
+     *
+     * @param numberAppointments
+     *        the numberAppointments to set
+     */
+    public void setNumberAppointments(int numberAppointments) {
+        this.numberAppointments = numberAppointments;
+    }
+
+    /**
+     * Number appointments.
+     *
+     * @param numberAppointment the number appointment
+     * @return the profile DTO
+     */
+    public ProfileDTO numberAppointments(int numberAppointment) {
+        this.setNumberAppointments(numberAppointment);
+        return this;
+    }
+
+    /**
+     * Gets the members.
+     *
+     * @return the members
+     */
+    public Set<ProfileDTO> getMembers() {
+        return members;
+    }
+
+    /**
+     * Sets the members.
+     *
+     * @param members
+     *        the members to set
+     */
+    public void setMembers(Set<ProfileDTO> members) {
+        this.members = members;
+    }
+
+    /**
+     * Gets the joined team.
+     *
+     * @return the joinedTeam
+     */
+    public SimpleGroupsMemberDTO getJoinedTeam() {
+        return joinedTeam;
+    }
+
+    /**
+     * Sets the joined team.
+     *
+     * @param joinedTeam
+     *        the joinedTeam to set
+     */
+    public void setJoinedTeam(SimpleGroupsMemberDTO joinedTeam) {
+        this.joinedTeam = joinedTeam;
+    }
+
+    /**
+     * Joined team.
+     *
+     * @param joinedTeam
+     *        the joined team
+     * @return the profile DTO
+     */
+    public ProfileDTO joinedTeam(SimpleGroupsMemberDTO joinedTeam) {
+        this.setJoinedTeam(joinedTeam);
+        return this;
+    }
+
+    /**
+     * Joined team.
+     *
+     * @param joinedTeam
+     *        the joined team
+     * @return the profile DTO
+     */
+    public ProfileDTO joinedTeam(GroupsMemberDTO joinedTeam) {
+        return this.joinedTeam(joinedTeam.castToSimpleGroupsMemberDTO());
+    }
+
 }

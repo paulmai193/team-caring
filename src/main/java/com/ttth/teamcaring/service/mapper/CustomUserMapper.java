@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.service.mapper;
 
 import org.mapstruct.Mapper;
@@ -8,18 +11,48 @@ import com.ttth.teamcaring.service.dto.CustomUserDTO;
 
 /**
  * Mapper for the entity CustomUser and its DTO CustomUserDTO.
+ *
+ * @author Dai Mai
  */
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Mapper(componentModel = "spring", uses = { UserMapper.class })
 public interface CustomUserMapper extends EntityMapper<CustomUserDTO, CustomUser> {
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.ttth.teamcaring.service.mapper.EntityMapper#toDto(java.lang.Object)
+     */
     @Mapping(source = "user.id", target = "userId")
-    CustomUserDTO toDto(CustomUser customUser); 
+    @Mapping(source = "user.imageUrl", target = "imageUrl")
+    @Mapping(source = "user.email", target = "email")
+    CustomUserDTO toDto(CustomUser customUser);
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.ttth.teamcaring.service.mapper.EntityMapper#toEntity(java.lang.
+     * Object)
+     */
     @Mapping(source = "userId", target = "user")
+    @Mapping(source = "imageUrl", target = "user.imageUrl")
+    @Mapping(source = "email", target = "user.email")
     @Mapping(target = "leaders", ignore = true)
+    @Mapping(target = "owners", ignore = true)
     @Mapping(target = "members", ignore = true)
+    @Mapping(target = "notifications", ignore = true)
+    @Mapping(target = "appointments", ignore = true)
+    @Mapping(target = "attendees", ignore = true)
+    @Mapping(target = "notes", ignore = true)
     CustomUser toEntity(CustomUserDTO customUserDTO);
 
+    /**
+     * From id.
+     *
+     * @param id
+     *        the id
+     * @return the custom user
+     */
     default CustomUser fromId(Long id) {
         if (id == null) {
             return null;

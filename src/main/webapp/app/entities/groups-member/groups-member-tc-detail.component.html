@@ -8,11 +8,21 @@
         <dd>
             <span>{{groupsMember.level}}</span>
         </dd>
-        <dt><span>Members</span></dt>
+        <dt><span>Status</span></dt>
         <dd>
-            <span *ngFor="let members of groupsMember.members; let last = last">
-                <a [routerLink]="['/custom-user-tc', members?.id ]">{{members.id}}</a>{{last ? '' : ', '}}
-            </span>
+            <span>{{groupsMember.status}}</span>
+        </dd>
+        <dt><span>Custom User</span></dt>
+        <dd>
+            <div *ngIf="groupsMember.customUserId">
+                <a [routerLink]="['/custom-user-tc', groupsMember.customUserId]">{{groupsMember.customUserId}}</a>
+            </div>
+        </dd>
+        <dt><span>Groups</span></dt>
+        <dd>
+            <div *ngIf="groupsMember.groupsId">
+                <a [routerLink]="['/groups-tc', groupsMember.groupsId]">{{groupsMember.groupsId}}</a>
+            </div>
         </dd>
     </dl>
 

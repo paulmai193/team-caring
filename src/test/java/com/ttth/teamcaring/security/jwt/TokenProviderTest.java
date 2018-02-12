@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.security.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,13 +24,28 @@ import io.github.jhipster.config.JHipsterProperties;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
+/**
+ * The Class TokenProviderTest.
+ *
+ * @author Dai Mai
+ */
 public class TokenProviderTest {
 
-    private final String secretKey = "e5c9ee274ae87bc031adda32e27fa98b9290da83";
-    private final long ONE_MINUTE = 60000;
-    private JHipsterProperties jHipsterProperties;
-    private TokenProvider tokenProvider;
+    /** The secret key. */
+    private final String       secretKey  = "e5c9ee274ae87bc031adda32e27fa98b9290da83";
 
+    /** The one minute. */
+    private final long         ONE_MINUTE = 60000;
+
+    /** The j hipster properties. */
+    private JHipsterProperties jHipsterProperties;
+
+    /** The token provider. */
+    private TokenProvider      tokenProvider;
+
+    /**
+     * Setup.
+     */
     @Before
     public void setup() {
         jHipsterProperties = Mockito.mock(JHipsterProperties.class);
@@ -36,6 +54,9 @@ public class TokenProviderTest {
         ReflectionTestUtils.setField(tokenProvider, "tokenValidityInMilliseconds", ONE_MINUTE);
     }
 
+    /**
+     * Test return false when JW thas invalid signature.
+     */
     @Test
     public void testReturnFalseWhenJWThasInvalidSignature() {
         boolean isTokenValid = tokenProvider.validateToken(createTokenWithDifferentSignature());
@@ -43,6 +64,9 @@ public class TokenProviderTest {
         assertThat(isTokenValid).isEqualTo(false);
     }
 
+    /**
+     * Test return false when JW tis malformed.
+     */
     @Test
     public void testReturnFalseWhenJWTisMalformed() {
         Authentication authentication = createAuthentication();
@@ -53,6 +77,9 @@ public class TokenProviderTest {
         assertThat(isTokenValid).isEqualTo(false);
     }
 
+    /**
+     * Test return false when JW tis expired.
+     */
     @Test
     public void testReturnFalseWhenJWTisExpired() {
         ReflectionTestUtils.setField(tokenProvider, "tokenValidityInMilliseconds", -ONE_MINUTE);
@@ -65,6 +92,9 @@ public class TokenProviderTest {
         assertThat(isTokenValid).isEqualTo(false);
     }
 
+    /**
+     * Test return false when JW tis unsupported.
+     */
     @Test
     public void testReturnFalseWhenJWTisUnsupported() {
         String unsupportedToken = createUnsupportedToken();
@@ -74,6 +104,9 @@ public class TokenProviderTest {
         assertThat(isTokenValid).isEqualTo(false);
     }
 
+    /**
+     * Test return false when JW tis invalid.
+     */
     @Test
     public void testReturnFalseWhenJWTisInvalid() {
         boolean isTokenValid = tokenProvider.validateToken("");
@@ -81,24 +114,35 @@ public class TokenProviderTest {
         assertThat(isTokenValid).isEqualTo(false);
     }
 
+    /**
+     * Creates the authentication.
+     *
+     * @return the authentication
+     */
     private Authentication createAuthentication() {
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS));
         return new UsernamePasswordAuthenticationToken("anonymous", "anonymous", authorities);
     }
 
+    /**
+     * Creates the unsupported token.
+     *
+     * @return the string
+     */
     private String createUnsupportedToken() {
-        return Jwts.builder()
-            .setPayload("payload")
-            .signWith(SignatureAlgorithm.HS512, secretKey)
-            .compact();
+        return Jwts.builder().setPayload("payload").signWith(SignatureAlgorithm.HS512, secretKey)
+                .compact();
     }
 
+    /**
+     * Creates the token with different signature.
+     *
+     * @return the string
+     */
     private String createTokenWithDifferentSignature() {
-        return Jwts.builder()
-            .setSubject("anonymous")
-            .signWith(SignatureAlgorithm.HS512, "e5c9ee274ae87bc031adda32e27fa98b9290da90")
-            .setExpiration(new Date(new Date().getTime() + ONE_MINUTE))
-            .compact();
+        return Jwts.builder().setSubject("anonymous")
+                .signWith(SignatureAlgorithm.HS512, "e5c9ee274ae87bc031adda32e27fa98b9290da90")
+                .setExpiration(new Date(new Date().getTime() + ONE_MINUTE)).compact();
     }
 }

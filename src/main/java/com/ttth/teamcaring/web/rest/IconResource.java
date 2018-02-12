@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.web.rest;
 
 import java.net.URI;
@@ -34,68 +37,93 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * REST controller for managing Icon.
+ *
+ * @author Dai Mai
  */
 @RestController
 @RequestMapping("/api")
 public class IconResource {
 
-    private final Logger log = LoggerFactory.getLogger(IconResource.class);
+    /** The log. */
+    private final Logger        log         = LoggerFactory.getLogger(IconResource.class);
 
+    /** The Constant ENTITY_NAME. */
     private static final String ENTITY_NAME = "icon";
 
-    private final IconService iconService;
+    /** The icon service. */
+    private final IconService   iconService;
 
+    /**
+     * Instantiates a new icon resource.
+     *
+     * @param iconService
+     *        the icon service
+     */
     public IconResource(IconService iconService) {
         this.iconService = iconService;
     }
 
     /**
-     * POST  /icons : Create a new icon.
+     * POST /icons : Create a new icon.
      *
-     * @param iconDTO the iconDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new iconDTO, or with status 400 (Bad Request) if the icon has already an ID
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param iconDTO
+     *        the iconDTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the
+     *         new iconDTO, or with status 400 (Bad Request) if the icon has
+     *         already an ID
+     * @throws URISyntaxException
+     *         if the Location URI syntax is incorrect
      */
     @PostMapping("/icons")
     @Timed
-    public ResponseEntity<IconDTO> createIcon(@RequestBody IconDTO iconDTO) throws URISyntaxException {
+    public ResponseEntity<IconDTO> createIcon(@RequestBody IconDTO iconDTO)
+            throws URISyntaxException {
         log.debug("REST request to save Icon : {}", iconDTO);
         if (iconDTO.getId() != null) {
-            throw new BadRequestAlertException("A new icon cannot already have an ID", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException("A new icon cannot already have an ID", ENTITY_NAME,
+                    "idexists");
         }
         IconDTO result = iconService.save(iconDTO);
-        return ResponseEntity.created(new URI("/api/icons/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return ResponseEntity
+                .created(new URI("/api/icons/" + result.getId())).headers(HeaderUtil
+                        .createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
-     * PUT  /icons : Updates an existing icon.
+     * PUT /icons : Updates an existing icon.
      *
-     * @param iconDTO the iconDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated iconDTO,
-     * or with status 400 (Bad Request) if the iconDTO is not valid,
-     * or with status 500 (Internal Server Error) if the iconDTO couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param iconDTO
+     *        the iconDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated
+     *         iconDTO, or with status 400 (Bad Request) if the iconDTO is not
+     *         valid, or with status 500 (Internal Server Error) if the iconDTO
+     *         couldn't be updated
+     * @throws URISyntaxException
+     *         if the Location URI syntax is incorrect
      */
     @PutMapping("/icons")
     @Timed
-    public ResponseEntity<IconDTO> updateIcon(@RequestBody IconDTO iconDTO) throws URISyntaxException {
+    public ResponseEntity<IconDTO> updateIcon(@RequestBody IconDTO iconDTO)
+            throws URISyntaxException {
         log.debug("REST request to update Icon : {}", iconDTO);
         if (iconDTO.getId() == null) {
             return createIcon(iconDTO);
         }
         IconDTO result = iconService.save(iconDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, iconDTO.getId().toString()))
-            .body(result);
+                .headers(
+                        HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, iconDTO.getId().toString()))
+                .body(result);
     }
 
     /**
-     * GET  /icons : get all the icons.
+     * GET /icons : get all the icons.
      *
-     * @param pageable the pagination information
-     * @return the ResponseEntity with status 200 (OK) and the list of icons in body
+     * @param pageable
+     *        the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of icons in
+     *         body
      */
     @GetMapping("/icons")
     @Timed
@@ -107,10 +135,12 @@ public class IconResource {
     }
 
     /**
-     * GET  /icons/:id : get the "id" icon.
+     * GET /icons/:id : get the "id" icon.
      *
-     * @param id the id of the iconDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the iconDTO, or with status 404 (Not Found)
+     * @param id
+     *        the id of the iconDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the
+     *         iconDTO, or with status 404 (Not Found)
      */
     @GetMapping("/icons/{id}")
     @Timed
@@ -121,9 +151,10 @@ public class IconResource {
     }
 
     /**
-     * DELETE  /icons/:id : delete the "id" icon.
+     * DELETE /icons/:id : delete the "id" icon.
      *
-     * @param id the id of the iconDTO to delete
+     * @param id
+     *        the id of the iconDTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/icons/{id}")
@@ -131,23 +162,28 @@ public class IconResource {
     public ResponseEntity<Void> deleteIcon(@PathVariable Long id) {
         log.debug("REST request to delete Icon : {}", id);
         iconService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 
     /**
-     * SEARCH  /_search/icons?query=:query : search for the icon corresponding
-     * to the query.
+     * SEARCH /_search/icons?query=:query : search for the icon corresponding to
+     * the query.
      *
-     * @param query the query of the icon search
-     * @param pageable the pagination information
+     * @param query
+     *        the query of the icon search
+     * @param pageable
+     *        the pagination information
      * @return the result of the search
      */
     @GetMapping("/_search/icons")
     @Timed
-    public ResponseEntity<List<IconDTO>> searchIcons(@RequestParam String query, @ApiParam Pageable pageable) {
+    public ResponseEntity<List<IconDTO>> searchIcons(@RequestParam String query,
+            @ApiParam Pageable pageable) {
         log.debug("REST request to search for a page of Icons for query {}", query);
         Page<IconDTO> page = iconService.search(query, pageable);
-        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/icons");
+        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page,
+                "/api/_search/icons");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 

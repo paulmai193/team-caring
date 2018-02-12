@@ -42,6 +42,7 @@ spring:
             hibernate.cache.use_query_cache: false
             hibernate.generate_statistics: true
             hibernate.cache.region.factory_class: io.github.jhipster.config.jcache.NoDefaultJCacheRegionFactory
+            hibernate.cache.auto_evict_collection_cache: true
     data:
         elasticsearch:
             cluster-name:
@@ -59,6 +60,12 @@ spring:
         cache-seconds: 1
     thymeleaf:
         cache: false
+        
+logging:
+    level:
+        com.ttth.teamcaring: DEBUG
+        com: WARN
+        org: WARN
 
 liquibase:
     contexts: dev

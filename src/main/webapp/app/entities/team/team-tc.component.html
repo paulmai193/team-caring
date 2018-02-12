@@ -33,6 +33,11 @@
             <th jhiSortBy="name"><span>Name</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="description"><span>Description</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="level"><span>Level</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="totalMember"><span>Total Member</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="extraGroupName"><span>Extra Group Name</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="extraGroupDescription"><span>Extra Group Description</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="extraGroupTotalMember"><span>Extra Group Total Member</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="ownerId"><span>Owner</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="iconId"><span>Icon</span> <span class="fa fa-sort"></span></th>
             <th></th>
             </tr>
@@ -43,6 +48,15 @@
                 <td>{{team.name}}</td>
                 <td>{{team.description}}</td>
                 <td>{{team.level}}</td>
+                <td>{{team.totalMember}}</td>
+                <td>{{team.extraGroupName}}</td>
+                <td>{{team.extraGroupDescription}}</td>
+                <td>{{team.extraGroupTotalMember}}</td>
+                <td>
+                    <div *ngIf="team.ownerId">
+                        <a [routerLink]="['../custom-user-tc', team.ownerId  ]" >{{team.ownerId}}</a>
+                    </div>
+                </td>
                 <td>
                     <div *ngIf="team.iconId">
                         <a [routerLink]="['../icon-tc', team.iconId  ]" >{{team.iconId}}</a>

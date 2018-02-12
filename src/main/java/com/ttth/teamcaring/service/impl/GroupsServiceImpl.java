@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.service.impl;
 
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
@@ -18,20 +21,37 @@ import com.ttth.teamcaring.service.mapper.GroupsMapper;
 
 /**
  * Service Implementation for managing Groups.
+ *
+ * @author Dai Mai
  */
 @Service
 @Transactional
-public class GroupsServiceImpl implements GroupsService{
+public class GroupsServiceImpl implements GroupsService {
 
-    private final Logger log = LoggerFactory.getLogger(GroupsServiceImpl.class);
+    /** The log. */
+    private final Logger                 log = LoggerFactory.getLogger(GroupsServiceImpl.class);
 
-    private final GroupsRepository groupsRepository;
+    /** The groups repository. */
+    private final GroupsRepository       groupsRepository;
 
-    private final GroupsMapper groupsMapper;
+    /** The groups mapper. */
+    private final GroupsMapper           groupsMapper;
 
+    /** The groups search repository. */
     private final GroupsSearchRepository groupsSearchRepository;
 
-    public GroupsServiceImpl(GroupsRepository groupsRepository, GroupsMapper groupsMapper, GroupsSearchRepository groupsSearchRepository) {
+    /**
+     * Instantiates a new groups service impl.
+     *
+     * @param groupsRepository
+     *        the groups repository
+     * @param groupsMapper
+     *        the groups mapper
+     * @param groupsSearchRepository
+     *        the groups search repository
+     */
+    public GroupsServiceImpl(GroupsRepository groupsRepository, GroupsMapper groupsMapper,
+            GroupsSearchRepository groupsSearchRepository) {
         this.groupsRepository = groupsRepository;
         this.groupsMapper = groupsMapper;
         this.groupsSearchRepository = groupsSearchRepository;
@@ -40,7 +60,8 @@ public class GroupsServiceImpl implements GroupsService{
     /**
      * Save a groups.
      *
-     * @param groupsDTO the entity to save
+     * @param groupsDTO
+     *        the entity to save
      * @return the persisted entity
      */
     @Override
@@ -54,37 +75,39 @@ public class GroupsServiceImpl implements GroupsService{
     }
 
     /**
-     *  Get all the groups.
+     * Get all the groups.
      *
-     *  @param pageable the pagination information
-     *  @return the list of entities
+     * @param pageable
+     *        the pagination information
+     * @return the list of entities
      */
     @Override
     @Transactional(readOnly = true)
     public Page<GroupsDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Groups");
-        return groupsRepository.findAll(pageable)
-            .map(groupsMapper::toDto);
+        return groupsRepository.findAll(pageable).map(groupsMapper::toDto);
     }
 
     /**
-     *  Get one groups by id.
+     * Get one groups by id.
      *
-     *  @param id the id of the entity
-     *  @return the entity
+     * @param id
+     *        the id of the entity
+     * @return the entity
      */
     @Override
     @Transactional(readOnly = true)
     public GroupsDTO findOne(Long id) {
         log.debug("Request to get Groups : {}", id);
-        Groups groups = groupsRepository.findOneWithEagerRelationships(id);
+        Groups groups = groupsRepository.findOne(id);
         return groupsMapper.toDto(groups);
     }
 
     /**
-     *  Delete the  groups by id.
+     * Delete the groups by id.
      *
-     *  @param id the id of the entity
+     * @param id
+     *        the id of the entity
      */
     @Override
     public void delete(Long id) {
@@ -96,9 +119,11 @@ public class GroupsServiceImpl implements GroupsService{
     /**
      * Search for the groups corresponding to the query.
      *
-     *  @param query the query of the search
-     *  @param pageable the pagination information
-     *  @return the list of entities
+     * @param query
+     *        the query of the search
+     * @param pageable
+     *        the pagination information
+     * @return the list of entities
      */
     @Override
     @Transactional(readOnly = true)
@@ -106,5 +131,20 @@ public class GroupsServiceImpl implements GroupsService{
         log.debug("Request to search for a page of Groups for query {}", query);
         Page<Groups> result = groupsSearchRepository.search(queryStringQuery(query), pageable);
         return result.map(groupsMapper::toDto);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.ttth.teamcaring.service.GroupsService#findByTeamAndLeader(java.lang.
+     * Long, java.lang.Long)
+     */
+    @Override
+    public GroupsDTO findByTeamAndLeader(Long teamId, Long customUserId) {
+        log.debug("Request to get Groups by team {0} and leader (customUser) {1}", teamId,
+                customUserId);
+        Groups groups = groupsRepository.findOneByTeamIdAndLeaderId(teamId, customUserId);
+        return groupsMapper.toDto(groups);
     }
 }

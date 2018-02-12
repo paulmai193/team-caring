@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.domain;
 
 import java.io.Serializable;
@@ -5,158 +8,200 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * A Groups.
+ *
+ * @author Dai Mai
  */
 @Entity
 @Table(name = "groups")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Document(indexName = "groups")
-public class Groups implements Serializable {
+public class Groups extends AbstractAuditingEntity implements Serializable {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /** The id. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long              id;
 
-    @Column(name = "description")
-    private String description;
-
-    @Column(name = "offical")
-    private Boolean offical;
-
-    @Column(name = "total_member")
-    private Integer totalMember;
-
-    @ManyToOne
-    private CustomUser customUser;
-
-    @ManyToMany
+    /** The members. */
+    @OneToMany(mappedBy = "groups")
+    @JsonIgnore
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "groups_members",
-               joinColumns = @JoinColumn(name="groups_id", referencedColumnName="id"),
-               inverseJoinColumns = @JoinColumn(name="members_id", referencedColumnName="id"))
-    private Set<GroupsMember> members = new HashSet<>();
+    private Set<GroupsMember> members          = new HashSet<>();
 
+    /** The leader. */
     @ManyToOne
-    private Team team;
+    private CustomUser        leader;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    /** The team. */
+    @ManyToOne
+    private Team              team;
+
+    /**
+     * Gets the id.
+     *
+     * @return the id
+     */
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not
+    // remove
     public Long getId() {
         return id;
     }
 
+    /**
+     * Sets the id.
+     *
+     * @param id
+     *        the new id
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public Groups description(String description) {
-        this.description = description;
-        return this;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean isOffical() {
-        return offical;
-    }
-
-    public Groups offical(Boolean offical) {
-        this.offical = offical;
-        return this;
-    }
-
-    public void setOffical(Boolean offical) {
-        this.offical = offical;
-    }
-
-    public Integer getTotalMember() {
-        return totalMember;
-    }
-
-    public Groups totalMember(Integer totalMember) {
-        this.totalMember = totalMember;
-        return this;
-    }
-
-    public void setTotalMember(Integer totalMember) {
-        this.totalMember = totalMember;
-    }
-
-    public CustomUser getCustomUser() {
-        return customUser;
-    }
-
-    public Groups customUser(CustomUser customUser) {
-        this.customUser = customUser;
-        return this;
-    }
-
-    public void setCustomUser(CustomUser customUser) {
-        this.customUser = customUser;
-    }
-
+    /**
+     * Gets the members.
+     *
+     * @return the members
+     */
     public Set<GroupsMember> getMembers() {
         return members;
     }
 
+    /**
+     * Members.
+     *
+     * @param groupsMembers
+     *        the groups members
+     * @return the groups
+     */
     public Groups members(Set<GroupsMember> groupsMembers) {
         this.members = groupsMembers;
         return this;
     }
 
-    public Groups addMembers(GroupsMember groupsMember) {
+    /**
+     * Adds the member.
+     *
+     * @param groupsMember
+     *        the groups member
+     * @return the groups
+     */
+    public Groups addMember(GroupsMember groupsMember) {
         this.members.add(groupsMember);
-        groupsMember.getGroups().add(this);
+        groupsMember.setGroups(this);
         return this;
     }
 
-    public Groups removeMembers(GroupsMember groupsMember) {
+    /**
+     * Removes the member.
+     *
+     * @param groupsMember
+     *        the groups member
+     * @return the groups
+     */
+    public Groups removeMember(GroupsMember groupsMember) {
         this.members.remove(groupsMember);
-        groupsMember.getGroups().remove(this);
+        groupsMember.setGroups(null);
         return this;
     }
 
+    /**
+     * Sets the members.
+     *
+     * @param groupsMembers
+     *        the new members
+     */
     public void setMembers(Set<GroupsMember> groupsMembers) {
         this.members = groupsMembers;
     }
 
+    /**
+     * Gets the leader.
+     *
+     * @return the leader
+     */
+    public CustomUser getLeader() {
+        return leader;
+    }
+
+    /**
+     * Leader.
+     *
+     * @param customUser
+     *        the custom user
+     * @return the groups
+     */
+    public Groups leader(CustomUser customUser) {
+        this.leader = customUser;
+        return this;
+    }
+
+    /**
+     * Sets the leader.
+     *
+     * @param customUser
+     *        the new leader
+     */
+    public void setLeader(CustomUser customUser) {
+        this.leader = customUser;
+    }
+
+    /**
+     * Gets the team.
+     *
+     * @return the team
+     */
     public Team getTeam() {
         return team;
     }
 
+    /**
+     * Team.
+     *
+     * @param team
+     *        the team
+     * @return the groups
+     */
     public Groups team(Team team) {
         this.team = team;
         return this;
     }
 
+    /**
+     * Sets the team.
+     *
+     * @param team
+     *        the new team
+     */
     public void setTeam(Team team) {
         this.team = team;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters
+    // and setters here, do not remove
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -172,18 +217,23 @@ public class Groups implements Serializable {
         return Objects.equals(getId(), groups.getId());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(getId());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return "Groups{" +
-            "id=" + getId() +
-            ", description='" + getDescription() + "'" +
-            ", offical='" + isOffical() + "'" +
-            ", totalMember='" + getTotalMember() + "'" +
-            "}";
+        return "Groups{" + "id=" + getId() + "}";
     }
 }

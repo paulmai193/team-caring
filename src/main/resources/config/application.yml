@@ -24,6 +24,9 @@ management:
 spring:
     application:
         name: teamCaring
+    jmx:
+      default-domain: teamCaring
+      enabled: false
     profiles:
         # The commented value for `active` can be replaced with valid Spring profiles to load.
         # Otherwise, it will be filled in by maven when building the WAR file
@@ -37,7 +40,7 @@ spring:
             ddl-auto: none
             naming:
                 physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
+                implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy 
     messages:
         basename: i18n/messages
     mvc:
@@ -62,6 +65,7 @@ spring:
 #            client-secret: xxx
 
         # jhipster-needle-add-social-configuration
+    
 security:
     basic:
         enabled: false
@@ -74,6 +78,10 @@ server:
 info:
     project:
         version: #project.version#
+        
+#endpoints:
+#  jmx:
+#    unique-names: true
 
 # ===================================================================
 # JHipster specific properties
@@ -122,3 +130,7 @@ jhipster:
 # ===================================================================
 
 application:
+    fcm:
+        key: AAAAIgmpNlI:APA91bERodONEwwJyo9uyPi6_x7347dSUEJmPK89wsPCC3NnBS7v5gsoUgBZULEX7aZsCWhWGGaYViLyFZYU1MGqHYj9BiwCkZMc_NrJ0vdSV5-C_aVAxVmM8PknvMbGc6GuEPWvSAnB
+        url: https://fcm.googleapis.com/fcm/send
+        icon: https://firebasestorage.googleapis.com/v0/b/teammap-97972.appspot.com/o/static%2Fteam-map-icon.png?alt=media&token=ab789b69-a60d-4c6d-85f6-aa0f6d0db274

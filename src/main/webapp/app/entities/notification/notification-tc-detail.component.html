@@ -1,0 +1,47 @@
+
+<div *ngIf="notification">
+    <h2><span>Notification</span> {{notification.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row-md jh-entity-details">
+        <dt><span>Title</span></dt>
+        <dd>
+            <span>{{notification.title}}</span>
+        </dd>
+        <dt><span>Message</span></dt>
+        <dd>
+            <span>{{notification.message}}</span>
+        </dd>
+        <dt><span>Read</span></dt>
+        <dd>
+            <span>{{notification.read}}</span>
+        </dd>
+        <dt><span>Type</span></dt>
+        <dd>
+            <span>{{notification.type}}</span>
+        </dd>
+        <dt><span>Target Id</span></dt>
+        <dd>
+            <span>{{notification.targetId}}</span>
+        </dd>
+        <dt><span>Custom User</span></dt>
+        <dd>
+            <div *ngIf="notification.customUserId">
+                <a [routerLink]="['/custom-user-tc', notification.customUserId]">{{notification.customUserId}}</a>
+            </div>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            (click)="previousState()"
+            class="btn btn-info">
+        <span class="fa fa-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button"
+            [routerLink]="['/', { outlets: { popup: 'notification-tc/'+ notification.id + '/edit'} }]"
+            replaceUrl="true"
+            class="btn btn-primary">
+        <span class="fa fa-pencil"></span>&nbsp;<span> Edit</span>
+    </button>
+</div>

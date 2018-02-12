@@ -4,8 +4,9 @@ export class GroupsMemberTc implements BaseEntity {
     constructor(
         public id?: number,
         public level?: number,
-        public members?: BaseEntity[],
-        public groups?: BaseEntity[],
+        public status?: number,
+        public customUserId?: number,
+        public groupsId?: number,
     ) {
     }
 }

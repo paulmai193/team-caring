@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.service.impl;
 
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
@@ -18,20 +21,37 @@ import com.ttth.teamcaring.service.mapper.IconMapper;
 
 /**
  * Service Implementation for managing Icon.
+ *
+ * @author Dai Mai
  */
 @Service
 @Transactional
-public class IconServiceImpl implements IconService{
+public class IconServiceImpl implements IconService {
 
-    private final Logger log = LoggerFactory.getLogger(IconServiceImpl.class);
+    /** The log. */
+    private final Logger               log = LoggerFactory.getLogger(IconServiceImpl.class);
 
-    private final IconRepository iconRepository;
+    /** The icon repository. */
+    private final IconRepository       iconRepository;
 
-    private final IconMapper iconMapper;
+    /** The icon mapper. */
+    private final IconMapper           iconMapper;
 
+    /** The icon search repository. */
     private final IconSearchRepository iconSearchRepository;
 
-    public IconServiceImpl(IconRepository iconRepository, IconMapper iconMapper, IconSearchRepository iconSearchRepository) {
+    /**
+     * Instantiates a new icon service impl.
+     *
+     * @param iconRepository
+     *        the icon repository
+     * @param iconMapper
+     *        the icon mapper
+     * @param iconSearchRepository
+     *        the icon search repository
+     */
+    public IconServiceImpl(IconRepository iconRepository, IconMapper iconMapper,
+            IconSearchRepository iconSearchRepository) {
         this.iconRepository = iconRepository;
         this.iconMapper = iconMapper;
         this.iconSearchRepository = iconSearchRepository;
@@ -40,7 +60,8 @@ public class IconServiceImpl implements IconService{
     /**
      * Save a icon.
      *
-     * @param iconDTO the entity to save
+     * @param iconDTO
+     *        the entity to save
      * @return the persisted entity
      */
     @Override
@@ -54,24 +75,25 @@ public class IconServiceImpl implements IconService{
     }
 
     /**
-     *  Get all the icons.
+     * Get all the icons.
      *
-     *  @param pageable the pagination information
-     *  @return the list of entities
+     * @param pageable
+     *        the pagination information
+     * @return the list of entities
      */
     @Override
     @Transactional(readOnly = true)
     public Page<IconDTO> findAll(Pageable pageable) {
         log.debug("Request to get all Icons");
-        return iconRepository.findAll(pageable)
-            .map(iconMapper::toDto);
+        return iconRepository.findAll(pageable).map(iconMapper::toDto);
     }
 
     /**
-     *  Get one icon by id.
+     * Get one icon by id.
      *
-     *  @param id the id of the entity
-     *  @return the entity
+     * @param id
+     *        the id of the entity
+     * @return the entity
      */
     @Override
     @Transactional(readOnly = true)
@@ -82,9 +104,10 @@ public class IconServiceImpl implements IconService{
     }
 
     /**
-     *  Delete the  icon by id.
+     * Delete the icon by id.
      *
-     *  @param id the id of the entity
+     * @param id
+     *        the id of the entity
      */
     @Override
     public void delete(Long id) {
@@ -96,9 +119,11 @@ public class IconServiceImpl implements IconService{
     /**
      * Search for the icon corresponding to the query.
      *
-     *  @param query the query of the search
-     *  @param pageable the pagination information
-     *  @return the list of entities
+     * @param query
+     *        the query of the search
+     * @param pageable
+     *        the pagination information
+     * @return the list of entities
      */
     @Override
     @Transactional(readOnly = true)

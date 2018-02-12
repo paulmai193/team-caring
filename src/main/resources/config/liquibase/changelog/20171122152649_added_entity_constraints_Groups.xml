@@ -8,23 +8,12 @@
     -->
     <changeSet id="20171122152649-2" author="jhipster">
         
-        <addForeignKeyConstraint baseColumnNames="custom_user_id"
+        <addForeignKeyConstraint baseColumnNames="leader_id"
                                  baseTableName="groups"
-                                 constraintName="fk_groups_custom_user_id"
+                                 constraintName="fk_groups_leader_id"
                                  referencedColumnNames="id"
                                  referencedTableName="custom_user"/>
 
-        <addForeignKeyConstraint baseColumnNames="groups_id"
-                                 baseTableName="groups_members"
-                                 constraintName="fk_groups_members_groups_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="groups"/>
-        <addForeignKeyConstraint baseColumnNames="members_id"
-                                 baseTableName="groups_members"
-                                 constraintName="fk_groups_members_members_id"
-                                 referencedColumnNames="id"
-                                 referencedTableName="groups_member"/>
-        
         <addForeignKeyConstraint baseColumnNames="team_id"
                                  baseTableName="groups"
                                  constraintName="fk_groups_team_id"

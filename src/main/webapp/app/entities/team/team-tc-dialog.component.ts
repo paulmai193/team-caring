@@ -9,6 +9,7 @@ import { JhiEventManager, JhiAlertService } from 'ng-jhipster';
 import { TeamTc } from './team-tc.model';
 import { TeamTcPopupService } from './team-tc-popup.service';
 import { TeamTcService } from './team-tc.service';
+import { CustomUserTc, CustomUserTcService } from '../custom-user';
 import { IconTc, IconTcService } from '../icon';
 import { ResponseWrapper } from '../../shared';
 
@@ -21,12 +22,15 @@ export class TeamTcDialogComponent implements OnInit {
     team: TeamTc;
     isSaving: boolean;
 
+    customusers: CustomUserTc[];
+
     icons: IconTc[];
 
     constructor(
         public activeModal: NgbActiveModal,
         private jhiAlertService: JhiAlertService,
         private teamService: TeamTcService,
+        private customUserService: CustomUserTcService,
         private iconService: IconTcService,
         private eventManager: JhiEventManager
     ) {
@@ -34,19 +38,10 @@ export class TeamTcDialogComponent implements OnInit {
 
     ngOnInit() {
         this.isSaving = false;
-        this.iconService
-            .query({filter: 'team-is-null'})
-            .subscribe((res: ResponseWrapper) => {
-                if (!this.team.iconId) {
-                    this.icons = res.json;
-                } else {
-                    this.iconService
-                        .find(this.team.iconId)
-                        .subscribe((subRes: IconTc) => {
-                            this.icons = [subRes].concat(res.json);
-                        }, (subRes: ResponseWrapper) => this.onError(subRes.json));
-                }
-            }, (res: ResponseWrapper) => this.onError(res.json));
+        this.customUserService.query()
+            .subscribe((res: ResponseWrapper) => { this.customusers = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
+        this.iconService.query()
+            .subscribe((res: ResponseWrapper) => { this.icons = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
     }
 
     clear() {
@@ -81,6 +76,10 @@ export class TeamTcDialogComponent implements OnInit {
 
     private onError(error: any) {
         this.jhiAlertService.error(error.message, null, null);
+    }
+
+    trackCustomUserById(index: number, item: CustomUserTc) {
+        return item.id;
     }
 
     trackIconById(index: number, item: IconTc) {

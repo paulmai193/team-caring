@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.config;
 
 import java.lang.management.ManagementFactory;
@@ -30,50 +33,102 @@ import com.zaxxer.hikari.HikariDataSource;
 
 import io.github.jhipster.config.JHipsterProperties;
 
+/**
+ * The Class MetricsConfiguration.
+ *
+ * @author Dai Mai
+ */
 @Configuration
 @EnableMetrics(proxyTargetClass = true)
 public class MetricsConfiguration extends MetricsConfigurerAdapter {
 
-    private static final String PROP_METRIC_REG_JVM_MEMORY = "jvm.memory";
-    private static final String PROP_METRIC_REG_JVM_GARBAGE = "jvm.garbage";
-    private static final String PROP_METRIC_REG_JVM_THREADS = "jvm.threads";
-    private static final String PROP_METRIC_REG_JVM_FILES = "jvm.files";
-    private static final String PROP_METRIC_REG_JVM_BUFFERS = "jvm.buffers";
-    private static final String PROP_METRIC_REG_JVM_ATTRIBUTE_SET = "jvm.attributes";
+    /** The Constant PROP_METRIC_REG_JVM_MEMORY. */
+    private static final String      PROP_METRIC_REG_JVM_MEMORY        = "jvm.memory";
 
-    private static final String PROP_METRIC_REG_JCACHE_STATISTICS = "jcache.statistics";
+    /** The Constant PROP_METRIC_REG_JVM_GARBAGE. */
+    private static final String      PROP_METRIC_REG_JVM_GARBAGE       = "jvm.garbage";
 
-    private final Logger log = LoggerFactory.getLogger(MetricsConfiguration.class);
+    /** The Constant PROP_METRIC_REG_JVM_THREADS. */
+    private static final String      PROP_METRIC_REG_JVM_THREADS       = "jvm.threads";
 
-    private MetricRegistry metricRegistry = new MetricRegistry();
+    /** The Constant PROP_METRIC_REG_JVM_FILES. */
+    private static final String      PROP_METRIC_REG_JVM_FILES         = "jvm.files";
 
-    private HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
+    /** The Constant PROP_METRIC_REG_JVM_BUFFERS. */
+    private static final String      PROP_METRIC_REG_JVM_BUFFERS       = "jvm.buffers";
 
+    /** The Constant PROP_METRIC_REG_JVM_ATTRIBUTE_SET. */
+    private static final String      PROP_METRIC_REG_JVM_ATTRIBUTE_SET = "jvm.attributes";
+
+    /** The Constant PROP_METRIC_REG_JCACHE_STATISTICS. */
+    private static final String      PROP_METRIC_REG_JCACHE_STATISTICS = "jcache.statistics";
+
+    /** The log. */
+    private final Logger             log                               = LoggerFactory
+            .getLogger(MetricsConfiguration.class);
+
+    /** The metric registry. */
+    private MetricRegistry           metricRegistry                    = new MetricRegistry();
+
+    /** The health check registry. */
+    private HealthCheckRegistry      healthCheckRegistry               = new HealthCheckRegistry();
+
+    /** The j hipster properties. */
     private final JHipsterProperties jHipsterProperties;
 
-    private HikariDataSource hikariDataSource;
+    /** The hikari data source. */
+    private HikariDataSource         hikariDataSource;
 
+    /**
+     * Instantiates a new metrics configuration.
+     *
+     * @param jHipsterProperties
+     *        the j hipster properties
+     */
     public MetricsConfiguration(JHipsterProperties jHipsterProperties) {
         this.jHipsterProperties = jHipsterProperties;
     }
 
+    /**
+     * Sets the hikari data source.
+     *
+     * @param hikariDataSource
+     *        the new hikari data source
+     */
     @Autowired(required = false)
     public void setHikariDataSource(HikariDataSource hikariDataSource) {
         this.hikariDataSource = hikariDataSource;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter#
+     * getMetricRegistry()
+     */
     @Override
     @Bean
     public MetricRegistry getMetricRegistry() {
         return metricRegistry;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter#
+     * getHealthCheckRegistry()
+     */
     @Override
     @Bean
     public HealthCheckRegistry getHealthCheckRegistry() {
         return healthCheckRegistry;
     }
 
+    /**
+     * Inits the.
+     */
     @PostConstruct
     public void init() {
         log.debug("Registering JVM gauges");
@@ -81,7 +136,8 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter {
         metricRegistry.register(PROP_METRIC_REG_JVM_GARBAGE, new GarbageCollectorMetricSet());
         metricRegistry.register(PROP_METRIC_REG_JVM_THREADS, new ThreadStatesGaugeSet());
         metricRegistry.register(PROP_METRIC_REG_JVM_FILES, new FileDescriptorRatioGauge());
-        metricRegistry.register(PROP_METRIC_REG_JVM_BUFFERS, new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
+        metricRegistry.register(PROP_METRIC_REG_JVM_BUFFERS,
+                new BufferPoolMetricSet(ManagementFactory.getPlatformMBeanServer()));
         metricRegistry.register(PROP_METRIC_REG_JVM_ATTRIBUTE_SET, new JvmAttributeGaugeSet());
         metricRegistry.register(PROP_METRIC_REG_JCACHE_STATISTICS, new JCacheGaugeSet());
         if (hikariDataSource != null) {
@@ -97,12 +153,11 @@ public class MetricsConfiguration extends MetricsConfigurerAdapter {
             log.info("Initializing Metrics Log reporting");
             Marker metricsMarker = MarkerFactory.getMarker("metrics");
             final Slf4jReporter reporter = Slf4jReporter.forRegistry(metricRegistry)
-                .outputTo(LoggerFactory.getLogger("metrics"))
-                .markWith(metricsMarker)
-                .convertRatesTo(TimeUnit.SECONDS)
-                .convertDurationsTo(TimeUnit.MILLISECONDS)
-                .build();
-            reporter.start(jHipsterProperties.getMetrics().getLogs().getReportFrequency(), TimeUnit.SECONDS);
+                    .outputTo(LoggerFactory.getLogger("metrics")).markWith(metricsMarker)
+                    .convertRatesTo(TimeUnit.SECONDS).convertDurationsTo(TimeUnit.MILLISECONDS)
+                    .build();
+            reporter.start(jHipsterProperties.getMetrics().getLogs().getReportFrequency(),
+                    TimeUnit.SECONDS);
         }
     }
 }

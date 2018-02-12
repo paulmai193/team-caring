@@ -1,14 +1,23 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.service.util;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  * Utility class for generating random Strings.
+ *
+ * @author Dai Mai
  */
 public final class RandomUtil {
 
+    /** The Constant DEF_COUNT. */
     private static final int DEF_COUNT = 20;
 
+    /**
+     * Instantiates a new random util.
+     */
     private RandomUtil() {
     }
 
@@ -31,10 +40,10 @@ public final class RandomUtil {
     }
 
     /**
-    * Generate a reset key.
-    *
-    * @return the generated reset key
-    */
+     * Generate a reset key.
+     *
+     * @return the generated reset key
+     */
     public static String generateResetKey() {
         return RandomStringUtils.randomNumeric(DEF_COUNT);
     }

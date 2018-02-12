@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.web.rest;
 
 import org.slf4j.Logger;
@@ -15,34 +18,61 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.ttth.teamcaring.config.Constants;
 import com.ttth.teamcaring.service.SocialService;
 
+/**
+ * The Class SocialController.
+ *
+ * @author Dai Mai
+ */
 @RestController
 @RequestMapping("/social")
 public class SocialController {
 
-    private final Logger log = LoggerFactory.getLogger(SocialController.class);
+    /** The log. */
+    private final Logger              log = LoggerFactory.getLogger(SocialController.class);
 
-    private final SocialService socialService;
+    /** The social service. */
+    private final SocialService       socialService;
 
+    /** The provider sign in utils. */
     private final ProviderSignInUtils providerSignInUtils;
 
+    /**
+     * Instantiates a new social controller.
+     *
+     * @param socialService
+     *        the social service
+     * @param providerSignInUtils
+     *        the provider sign in utils
+     */
     public SocialController(SocialService socialService, ProviderSignInUtils providerSignInUtils) {
         this.socialService = socialService;
         this.providerSignInUtils = providerSignInUtils;
     }
 
+    /**
+     * Sign up.
+     *
+     * @param webRequest
+     *        the web request
+     * @param langKey
+     *        the lang key
+     * @return the redirect view
+     */
     @GetMapping("/signup")
-    public RedirectView signUp(WebRequest webRequest, @CookieValue(name = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = Constants.DEFAULT_LANGUAGE) String langKey) {
+    public RedirectView signUp(WebRequest webRequest,
+            @CookieValue(name = "NG_TRANSLATE_LANG_KEY", required = false, defaultValue = Constants.DEFAULT_LANGUAGE) String langKey) {
         try {
             Connection<?> connection = providerSignInUtils.getConnectionFromSession(webRequest);
             socialService.createSocialUser(connection, langKey.replace("\"", ""));
-            return new RedirectView(URIBuilder.fromUri("/#/social-register/" + connection.getKey().getProviderId())
-                .queryParam("success", "true")
-                .build().toString(), true);
-        } catch (Exception e) {
+            return new RedirectView(
+                    URIBuilder.fromUri("/#/social-register/" + connection.getKey().getProviderId())
+                            .queryParam("success", "true").build().toString(),
+                    true);
+        }
+        catch (Exception e) {
             log.error("Exception creating social user: ", e);
             return new RedirectView(URIBuilder.fromUri("/#/social-register/no-provider")
-                .queryParam("success", "false")
-                .build().toString(), true);
+                    .queryParam("success", "false").build().toString(), true);
         }
     }
 }

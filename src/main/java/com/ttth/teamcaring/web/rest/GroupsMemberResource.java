@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.web.rest;
 
 import java.net.URI;
@@ -34,83 +37,111 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * REST controller for managing GroupsMember.
+ *
+ * @author Dai Mai
  */
 @RestController
 @RequestMapping("/api")
 public class GroupsMemberResource {
 
-    private final Logger log = LoggerFactory.getLogger(GroupsMemberResource.class);
+    /** The log. */
+    private final Logger              log         = LoggerFactory
+            .getLogger(GroupsMemberResource.class);
 
-    private static final String ENTITY_NAME = "groupsMember";
+    /** The Constant ENTITY_NAME. */
+    public static final String        ENTITY_NAME = "groupsMember";
 
+    /** The groups member service. */
     private final GroupsMemberService groupsMemberService;
 
+    /**
+     * Instantiates a new groups member resource.
+     *
+     * @param groupsMemberService
+     *        the groups member service
+     */
     public GroupsMemberResource(GroupsMemberService groupsMemberService) {
         this.groupsMemberService = groupsMemberService;
     }
 
     /**
-     * POST  /groups-members : Create a new groupsMember.
+     * POST /groups-members : Create a new groupsMember.
      *
-     * @param groupsMemberDTO the groupsMemberDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new groupsMemberDTO, or with status 400 (Bad Request) if the groupsMember has already an ID
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param groupsMemberDTO
+     *        the groupsMemberDTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the
+     *         new groupsMemberDTO, or with status 400 (Bad Request) if the
+     *         groupsMember has already an ID
+     * @throws URISyntaxException
+     *         if the Location URI syntax is incorrect
      */
     @PostMapping("/groups-members")
     @Timed
-    public ResponseEntity<GroupsMemberDTO> createGroupsMember(@RequestBody GroupsMemberDTO groupsMemberDTO) throws URISyntaxException {
+    public ResponseEntity<GroupsMemberDTO> createGroupsMember(
+            @RequestBody GroupsMemberDTO groupsMemberDTO) throws URISyntaxException {
         log.debug("REST request to save GroupsMember : {}", groupsMemberDTO);
         if (groupsMemberDTO.getId() != null) {
-            throw new BadRequestAlertException("A new groupsMember cannot already have an ID", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException("A new groupsMember cannot already have an ID",
+                    ENTITY_NAME, "idexists");
         }
         GroupsMemberDTO result = groupsMemberService.save(groupsMemberDTO);
-        return ResponseEntity.created(new URI("/api/groups-members/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return ResponseEntity
+                .created(new URI("/api/groups-members/" + result.getId())).headers(HeaderUtil
+                        .createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
-     * PUT  /groups-members : Updates an existing groupsMember.
+     * PUT /groups-members : Updates an existing groupsMember.
      *
-     * @param groupsMemberDTO the groupsMemberDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated groupsMemberDTO,
-     * or with status 400 (Bad Request) if the groupsMemberDTO is not valid,
-     * or with status 500 (Internal Server Error) if the groupsMemberDTO couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param groupsMemberDTO
+     *        the groupsMemberDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated
+     *         groupsMemberDTO, or with status 400 (Bad Request) if the
+     *         groupsMemberDTO is not valid, or with status 500 (Internal Server
+     *         Error) if the groupsMemberDTO couldn't be updated
+     * @throws URISyntaxException
+     *         if the Location URI syntax is incorrect
      */
     @PutMapping("/groups-members")
     @Timed
-    public ResponseEntity<GroupsMemberDTO> updateGroupsMember(@RequestBody GroupsMemberDTO groupsMemberDTO) throws URISyntaxException {
+    public ResponseEntity<GroupsMemberDTO> updateGroupsMember(
+            @RequestBody GroupsMemberDTO groupsMemberDTO) throws URISyntaxException {
         log.debug("REST request to update GroupsMember : {}", groupsMemberDTO);
         if (groupsMemberDTO.getId() == null) {
             return createGroupsMember(groupsMemberDTO);
         }
         GroupsMemberDTO result = groupsMemberService.save(groupsMemberDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, groupsMemberDTO.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().headers(
+                HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, groupsMemberDTO.getId().toString()))
+                .body(result);
     }
 
     /**
-     * GET  /groups-members : get all the groupsMembers.
+     * GET /groups-members : get all the groupsMembers.
      *
-     * @param pageable the pagination information
-     * @return the ResponseEntity with status 200 (OK) and the list of groupsMembers in body
+     * @param pageable
+     *        the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of
+     *         groupsMembers in body
      */
     @GetMapping("/groups-members")
     @Timed
     public ResponseEntity<List<GroupsMemberDTO>> getAllGroupsMembers(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of GroupsMembers");
         Page<GroupsMemberDTO> page = groupsMemberService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/groups-members");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page,
+                "/api/groups-members");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
     /**
-     * GET  /groups-members/:id : get the "id" groupsMember.
+     * GET /groups-members/:id : get the "id" groupsMember.
      *
-     * @param id the id of the groupsMemberDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the groupsMemberDTO, or with status 404 (Not Found)
+     * @param id
+     *        the id of the groupsMemberDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the
+     *         groupsMemberDTO, or with status 404 (Not Found)
      */
     @GetMapping("/groups-members/{id}")
     @Timed
@@ -121,9 +152,10 @@ public class GroupsMemberResource {
     }
 
     /**
-     * DELETE  /groups-members/:id : delete the "id" groupsMember.
+     * DELETE /groups-members/:id : delete the "id" groupsMember.
      *
-     * @param id the id of the groupsMemberDTO to delete
+     * @param id
+     *        the id of the groupsMemberDTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/groups-members/{id}")
@@ -131,23 +163,28 @@ public class GroupsMemberResource {
     public ResponseEntity<Void> deleteGroupsMember(@PathVariable Long id) {
         log.debug("REST request to delete GroupsMember : {}", id);
         groupsMemberService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 
     /**
-     * SEARCH  /_search/groups-members?query=:query : search for the groupsMember corresponding
-     * to the query.
+     * SEARCH /_search/groups-members?query=:query : search for the groupsMember
+     * corresponding to the query.
      *
-     * @param query the query of the groupsMember search
-     * @param pageable the pagination information
+     * @param query
+     *        the query of the groupsMember search
+     * @param pageable
+     *        the pagination information
      * @return the result of the search
      */
     @GetMapping("/_search/groups-members")
     @Timed
-    public ResponseEntity<List<GroupsMemberDTO>> searchGroupsMembers(@RequestParam String query, @ApiParam Pageable pageable) {
+    public ResponseEntity<List<GroupsMemberDTO>> searchGroupsMembers(@RequestParam String query,
+            @ApiParam Pageable pageable) {
         log.debug("REST request to search for a page of GroupsMembers for query {}", query);
         Page<GroupsMemberDTO> page = groupsMemberService.search(query, pageable);
-        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/groups-members");
+        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page,
+                "/api/_search/groups-members");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 

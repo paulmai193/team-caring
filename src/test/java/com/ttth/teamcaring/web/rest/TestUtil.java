@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.web.rest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -20,24 +23,26 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 /**
  * Utility class for testing REST controllers.
+ *
+ * @author Dai Mai
  */
 public class TestUtil {
 
-    /** MediaType for JSON UTF8 */
+    /** MediaType for JSON UTF8. */
     public static final MediaType APPLICATION_JSON_UTF8 = new MediaType(
-            MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(), StandardCharsets.UTF_8);
+            MediaType.APPLICATION_JSON.getType(), MediaType.APPLICATION_JSON.getSubtype(),
+            StandardCharsets.UTF_8);
 
     /**
      * Convert an object to JSON byte array.
      *
      * @param object
-     *            the object to convert
+     *        the object to convert
      * @return the JSON byte array
      * @throws IOException
+     *         Signals that an I/O exception has occurred.
      */
-    public static byte[] convertObjectToJsonBytes(Object object)
-            throws IOException {
+    public static byte[] convertObjectToJsonBytes(Object object) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
@@ -50,8 +55,10 @@ public class TestUtil {
     /**
      * Create a byte array with a specific size filled with specified data.
      *
-     * @param size the size of the byte array
-     * @param data the data to put in the byte array
+     * @param size
+     *        the size of the byte array
+     * @param data
+     *        the data to put in the byte array
      * @return the JSON byte array
      */
     public static byte[] createByteArray(int size, String data) {
@@ -63,16 +70,32 @@ public class TestUtil {
     }
 
     /**
-     * A matcher that tests that the examined string represents the same instant as the reference datetime.
+     * A matcher that tests that the examined string represents the same instant
+     * as the reference datetime.
+     *
+     * @author Dai Mai
      */
     public static class ZonedDateTimeMatcher extends TypeSafeDiagnosingMatcher<String> {
 
+        /** The date. */
         private final ZonedDateTime date;
 
+        /**
+         * Instantiates a new zoned date time matcher.
+         *
+         * @param date
+         *        the date
+         */
         public ZonedDateTimeMatcher(ZonedDateTime date) {
             this.date = date;
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.hamcrest.TypeSafeDiagnosingMatcher#matchesSafely(java.lang.
+         * Object, org.hamcrest.Description)
+         */
         @Override
         protected boolean matchesSafely(String item, Description mismatchDescription) {
             try {
@@ -81,14 +104,20 @@ public class TestUtil {
                     return false;
                 }
                 return true;
-            } catch (DateTimeParseException e) {
+            }
+            catch (DateTimeParseException e) {
                 mismatchDescription.appendText("was ").appendValue(item)
-                    .appendText(", which could not be parsed as a ZonedDateTime");
+                        .appendText(", which could not be parsed as a ZonedDateTime");
                 return false;
             }
 
         }
 
+        /*
+         * (non-Javadoc)
+         * 
+         * @see org.hamcrest.SelfDescribing#describeTo(org.hamcrest.Description)
+         */
         @Override
         public void describeTo(Description description) {
             description.appendText("a String representing the same Instant as ").appendValue(date);
@@ -96,8 +125,13 @@ public class TestUtil {
     }
 
     /**
-     * Creates a matcher that matches when the examined string reprensents the same instant as the reference datetime
-     * @param date the reference datetime against which the examined string is checked
+     * Creates a matcher that matches when the examined string reprensents the
+     * same instant as the reference datetime.
+     *
+     * @param date
+     *        the reference datetime against which the examined string is
+     *        checked
+     * @return the zoned date time matcher
      */
     public static ZonedDateTimeMatcher sameInstant(ZonedDateTime date) {
         return new ZonedDateTimeMatcher(date);
@@ -105,6 +139,11 @@ public class TestUtil {
 
     /**
      * Verifies the equals/hashcode contract on the domain object.
+     *
+     * @param clazz
+     *        the clazz
+     * @throws Exception
+     *         the exception
      */
     @SuppressWarnings("unchecked")
     public static void equalsVerifier(Class clazz) throws Exception {
@@ -124,11 +163,13 @@ public class TestUtil {
     }
 
     /**
-     * Create a FormattingConversionService which use ISO date format, instead of the localized one.
+     * Create a FormattingConversionService which use ISO date format, instead
+     * of the localized one.
+     * 
      * @return the FormattingConversionService
      */
     public static FormattingConversionService createFormattingConversionService() {
-        DefaultFormattingConversionService dfcs = new DefaultFormattingConversionService ();
+        DefaultFormattingConversionService dfcs = new DefaultFormattingConversionService();
         DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
         registrar.setUseIsoFormat(true);
         registrar.registerFormatters(dfcs);

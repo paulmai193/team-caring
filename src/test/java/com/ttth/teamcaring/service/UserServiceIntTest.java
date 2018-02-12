@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,14 +38,20 @@ import com.ttth.teamcaring.service.util.RandomUtil;
 @Transactional
 public class UserServiceIntTest {
 
+    /** The user repository. */
     @Autowired
     private UserRepository userRepository;
 
+    /** The user service. */
     @Autowired
-    private UserService userService;
+    private UserService    userService;
 
-    private User user;
+    /** The user. */
+    private User           user;
 
+    /**
+     * Inits the.
+     */
     @Before
     public void init() {
         user = new User();
@@ -56,6 +65,9 @@ public class UserServiceIntTest {
         user.setLangKey("en");
     }
 
+    /**
+     * Assert that user must exist to reset password.
+     */
     @Test
     @Transactional
     public void assertThatUserMustExistToResetPassword() {
@@ -70,6 +82,9 @@ public class UserServiceIntTest {
         assertThat(maybeUser.orElse(null).getResetKey()).isNotNull();
     }
 
+    /**
+     * Assert that only activated user can request password reset.
+     */
     @Test
     @Transactional
     public void assertThatOnlyActivatedUserCanRequestPasswordReset() {
@@ -81,6 +96,9 @@ public class UserServiceIntTest {
         userRepository.delete(user);
     }
 
+    /**
+     * Assert that reset key must not be older than 24 hours.
+     */
     @Test
     @Transactional
     public void assertThatResetKeyMustNotBeOlderThan24Hours() {
@@ -91,11 +109,15 @@ public class UserServiceIntTest {
         user.setResetKey(resetKey);
         userRepository.saveAndFlush(user);
 
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
+        Optional<User> maybeUser = userService.completePasswordReset("johndoe2",
+                user.getResetKey());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
 
+    /**
+     * Assert that reset key must be valid.
+     */
     @Test
     @Transactional
     public void assertThatResetKeyMustBeValid() {
@@ -105,11 +127,15 @@ public class UserServiceIntTest {
         user.setResetKey("1234");
         userRepository.saveAndFlush(user);
 
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
+        Optional<User> maybeUser = userService.completePasswordReset("johndoe2",
+                user.getResetKey());
         assertThat(maybeUser).isNotPresent();
         userRepository.delete(user);
     }
 
+    /**
+     * Assert that user can reset password.
+     */
     @Test
     @Transactional
     public void assertThatUserCanResetPassword() {
@@ -121,7 +147,8 @@ public class UserServiceIntTest {
         user.setResetKey(resetKey);
         userRepository.saveAndFlush(user);
 
-        Optional<User> maybeUser = userService.completePasswordReset("johndoe2", user.getResetKey());
+        Optional<User> maybeUser = userService.completePasswordReset("johndoe2",
+                user.getResetKey());
         assertThat(maybeUser).isPresent();
         assertThat(maybeUser.orElse(null).getResetDate()).isNull();
         assertThat(maybeUser.orElse(null).getResetKey()).isNull();
@@ -130,6 +157,9 @@ public class UserServiceIntTest {
         userRepository.delete(user);
     }
 
+    /**
+     * Test find not activated users by creation date before.
+     */
     @Test
     @Transactional
     public void testFindNotActivatedUsersByCreationDateBefore() {
@@ -138,13 +168,18 @@ public class UserServiceIntTest {
         User dbUser = userRepository.saveAndFlush(user);
         dbUser.setCreatedDate(now.minus(4, ChronoUnit.DAYS));
         userRepository.saveAndFlush(user);
-        List<User> users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
+        List<User> users = userRepository
+                .findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
         assertThat(users).isNotEmpty();
         userService.removeNotActivatedUsers();
-        users = userRepository.findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
+        users = userRepository
+                .findAllByActivatedIsFalseAndCreatedDateBefore(now.minus(3, ChronoUnit.DAYS));
         assertThat(users).isEmpty();
     }
 
+    /**
+     * Assert that anonymous user is not get.
+     */
     @Test
     @Transactional
     public void assertThatAnonymousUserIsNotGet() {
@@ -155,10 +190,12 @@ public class UserServiceIntTest {
         final PageRequest pageable = new PageRequest(0, (int) userRepository.count());
         final Page<UserDTO> allManagedUsers = userService.getAllManagedUsers(pageable);
         assertThat(allManagedUsers.getContent().stream()
-            .noneMatch(user -> Constants.ANONYMOUS_USER.equals(user.getLogin())))
-            .isTrue();
+                .noneMatch(user -> Constants.ANONYMOUS_USER.equals(user.getLogin()))).isTrue();
     }
 
+    /**
+     * Test remove not activated users.
+     */
     @Test
     @Transactional
     public void testRemoveNotActivatedUsers() {

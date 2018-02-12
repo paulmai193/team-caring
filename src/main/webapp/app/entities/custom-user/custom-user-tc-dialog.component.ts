@@ -10,7 +10,6 @@ import { CustomUserTc } from './custom-user-tc.model';
 import { CustomUserTcPopupService } from './custom-user-tc-popup.service';
 import { CustomUserTcService } from './custom-user-tc.service';
 import { User, UserService } from '../../shared';
-import { GroupsMemberTc, GroupsMemberTcService } from '../groups-member';
 import { ResponseWrapper } from '../../shared';
 
 @Component({
@@ -24,14 +23,11 @@ export class CustomUserTcDialogComponent implements OnInit {
 
     users: User[];
 
-    groupsmembers: GroupsMemberTc[];
-
     constructor(
         public activeModal: NgbActiveModal,
         private jhiAlertService: JhiAlertService,
         private customUserService: CustomUserTcService,
         private userService: UserService,
-        private groupsMemberService: GroupsMemberTcService,
         private eventManager: JhiEventManager
     ) {
     }
@@ -40,8 +36,6 @@ export class CustomUserTcDialogComponent implements OnInit {
         this.isSaving = false;
         this.userService.query()
             .subscribe((res: ResponseWrapper) => { this.users = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
-        this.groupsMemberService.query()
-            .subscribe((res: ResponseWrapper) => { this.groupsmembers = res.json; }, (res: ResponseWrapper) => this.onError(res.json));
     }
 
     clear() {
@@ -80,21 +74,6 @@ export class CustomUserTcDialogComponent implements OnInit {
 
     trackUserById(index: number, item: User) {
         return item.id;
-    }
-
-    trackGroupsMemberById(index: number, item: GroupsMemberTc) {
-        return item.id;
-    }
-
-    getSelected(selectedVals: Array<any>, option: any) {
-        if (selectedVals) {
-            for (let i = 0; i < selectedVals.length; i++) {
-                if (option.id === selectedVals[i].id) {
-                    return selectedVals[i];
-                }
-            }
-        }
-        return option;
     }
 }
 

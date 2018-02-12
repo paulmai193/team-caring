@@ -27,6 +27,21 @@
             <input type="text" class="form-control" name="pushToken" id="field_pushToken"
                 [(ngModel)]="customUser.pushToken"  />
         </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_extraGroupName">Extra Group Name</label>
+            <input type="text" class="form-control" name="extraGroupName" id="field_extraGroupName"
+                [(ngModel)]="customUser.extraGroupName"  />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_extraGroupDescription">Extra Group Description</label>
+            <input type="text" class="form-control" name="extraGroupDescription" id="field_extraGroupDescription"
+                [(ngModel)]="customUser.extraGroupDescription"  />
+        </div>
+        <div class="form-group">
+            <label class="form-control-label" for="field_extraGroupTotalMember">Extra Group Total Member</label>
+            <input type="number" class="form-control" name="extraGroupTotalMember" id="field_extraGroupTotalMember"
+                [(ngModel)]="customUser.extraGroupTotalMember"  />
+        </div>
 
         <div class="form-group">
             <label class="form-control-label" for="field_user">User</label>

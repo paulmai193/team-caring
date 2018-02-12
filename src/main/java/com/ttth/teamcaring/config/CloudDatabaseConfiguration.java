@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.config;
 
 import javax.sql.DataSource;
@@ -11,12 +14,23 @@ import org.springframework.context.annotation.Profile;
 
 import io.github.jhipster.config.JHipsterConstants;
 
+/**
+ * The Class CloudDatabaseConfiguration.
+ *
+ * @author Dai Mai
+ */
 @Configuration
 @Profile(JHipsterConstants.SPRING_PROFILE_CLOUD)
 public class CloudDatabaseConfiguration extends AbstractCloudConfig {
 
+    /** The log. */
     private final Logger log = LoggerFactory.getLogger(CloudDatabaseConfiguration.class);
 
+    /**
+     * Data source.
+     *
+     * @return the data source
+     */
     @Bean
     public DataSource dataSource() {
         log.info("Configuring JDBC datasource from a cloud provider");

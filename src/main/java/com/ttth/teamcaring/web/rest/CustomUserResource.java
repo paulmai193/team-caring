@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.web.rest;
 
 import java.net.URI;
@@ -34,83 +37,110 @@ import io.swagger.annotations.ApiParam;
 
 /**
  * REST controller for managing CustomUser.
+ *
+ * @author Dai Mai
  */
 @RestController
 @RequestMapping("/api")
 public class CustomUserResource {
 
-    private final Logger log = LoggerFactory.getLogger(CustomUserResource.class);
+    /** The log. */
+    private final Logger            log         = LoggerFactory.getLogger(CustomUserResource.class);
 
-    private static final String ENTITY_NAME = "customUser";
+    /** The Constant ENTITY_NAME. */
+    public static final String      ENTITY_NAME = "customUser";
 
+    /** The custom user service. */
     private final CustomUserService customUserService;
 
+    /**
+     * Instantiates a new custom user resource.
+     *
+     * @param customUserService
+     *        the custom user service
+     */
     public CustomUserResource(CustomUserService customUserService) {
         this.customUserService = customUserService;
     }
 
     /**
-     * POST  /custom-users : Create a new customUser.
+     * POST /custom-users : Create a new customUser.
      *
-     * @param customUserDTO the customUserDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new customUserDTO, or with status 400 (Bad Request) if the customUser has already an ID
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param customUserDTO
+     *        the customUserDTO to create
+     * @return the ResponseEntity with status 201 (Created) and with body the
+     *         new customUserDTO, or with status 400 (Bad Request) if the
+     *         customUser has already an ID
+     * @throws URISyntaxException
+     *         if the Location URI syntax is incorrect
      */
     @PostMapping("/custom-users")
     @Timed
-    public ResponseEntity<CustomUserDTO> createCustomUser(@RequestBody CustomUserDTO customUserDTO) throws URISyntaxException {
+    public ResponseEntity<CustomUserDTO> createCustomUser(@RequestBody CustomUserDTO customUserDTO)
+            throws URISyntaxException {
         log.debug("REST request to save CustomUser : {}", customUserDTO);
         if (customUserDTO.getId() != null) {
-            throw new BadRequestAlertException("A new customUser cannot already have an ID", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException("A new customUser cannot already have an ID",
+                    ENTITY_NAME, "idexists");
         }
         CustomUserDTO result = customUserService.save(customUserDTO);
-        return ResponseEntity.created(new URI("/api/custom-users/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        return ResponseEntity
+                .created(new URI("/api/custom-users/" + result.getId())).headers(HeaderUtil
+                        .createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                .body(result);
     }
 
     /**
-     * PUT  /custom-users : Updates an existing customUser.
+     * PUT /custom-users : Updates an existing customUser.
      *
-     * @param customUserDTO the customUserDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated customUserDTO,
-     * or with status 400 (Bad Request) if the customUserDTO is not valid,
-     * or with status 500 (Internal Server Error) if the customUserDTO couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param customUserDTO
+     *        the customUserDTO to update
+     * @return the ResponseEntity with status 200 (OK) and with body the updated
+     *         customUserDTO, or with status 400 (Bad Request) if the
+     *         customUserDTO is not valid, or with status 500 (Internal Server
+     *         Error) if the customUserDTO couldn't be updated
+     * @throws URISyntaxException
+     *         if the Location URI syntax is incorrect
      */
     @PutMapping("/custom-users")
     @Timed
-    public ResponseEntity<CustomUserDTO> updateCustomUser(@RequestBody CustomUserDTO customUserDTO) throws URISyntaxException {
+    public ResponseEntity<CustomUserDTO> updateCustomUser(@RequestBody CustomUserDTO customUserDTO)
+            throws URISyntaxException {
         log.debug("REST request to update CustomUser : {}", customUserDTO);
         if (customUserDTO.getId() == null) {
             return createCustomUser(customUserDTO);
         }
         CustomUserDTO result = customUserService.save(customUserDTO);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, customUserDTO.getId().toString()))
-            .body(result);
+        return ResponseEntity.ok().headers(
+                HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, customUserDTO.getId().toString()))
+                .body(result);
     }
 
     /**
-     * GET  /custom-users : get all the customUsers.
+     * GET /custom-users : get all the customUsers.
      *
-     * @param pageable the pagination information
-     * @return the ResponseEntity with status 200 (OK) and the list of customUsers in body
+     * @param pageable
+     *        the pagination information
+     * @return the ResponseEntity with status 200 (OK) and the list of
+     *         customUsers in body
      */
     @GetMapping("/custom-users")
     @Timed
     public ResponseEntity<List<CustomUserDTO>> getAllCustomUsers(@ApiParam Pageable pageable) {
         log.debug("REST request to get a page of CustomUsers");
         Page<CustomUserDTO> page = customUserService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/custom-users");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page,
+                "/api/custom-users");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 
     /**
-     * GET  /custom-users/:id : get the "id" customUser.
+     * GET /custom-users/:id : get the "id" customUser.
      *
-     * @param id the id of the customUserDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the customUserDTO, or with status 404 (Not Found)
+     * @param id
+     *        the id of the customUserDTO to retrieve
+     * @return the ResponseEntity with status 200 (OK) and with body the
+     *         customUserDTO, or with status 404 (Not Found)
      */
     @GetMapping("/custom-users/{id}")
     @Timed
@@ -121,9 +151,10 @@ public class CustomUserResource {
     }
 
     /**
-     * DELETE  /custom-users/:id : delete the "id" customUser.
+     * DELETE /custom-users/:id : delete the "id" customUser.
      *
-     * @param id the id of the customUserDTO to delete
+     * @param id
+     *        the id of the customUserDTO to delete
      * @return the ResponseEntity with status 200 (OK)
      */
     @DeleteMapping("/custom-users/{id}")
@@ -131,23 +162,28 @@ public class CustomUserResource {
     public ResponseEntity<Void> deleteCustomUser(@PathVariable Long id) {
         log.debug("REST request to delete CustomUser : {}", id);
         customUserService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
     }
 
     /**
-     * SEARCH  /_search/custom-users?query=:query : search for the customUser corresponding
-     * to the query.
+     * SEARCH /_search/custom-users?query=:query : search for the customUser
+     * corresponding to the query.
      *
-     * @param query the query of the customUser search
-     * @param pageable the pagination information
+     * @param query
+     *        the query of the customUser search
+     * @param pageable
+     *        the pagination information
      * @return the result of the search
      */
     @GetMapping("/_search/custom-users")
     @Timed
-    public ResponseEntity<List<CustomUserDTO>> searchCustomUsers(@RequestParam String query, @ApiParam Pageable pageable) {
+    public ResponseEntity<List<CustomUserDTO>> searchCustomUsers(@RequestParam String query,
+            @ApiParam Pageable pageable) {
         log.debug("REST request to search for a page of CustomUsers for query {}", query);
         Page<CustomUserDTO> page = customUserService.search(query, pageable);
-        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/custom-users");
+        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page,
+                "/api/_search/custom-users");
         return new ResponseEntity<>(page.getContent(), headers, HttpStatus.OK);
     }
 

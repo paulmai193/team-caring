@@ -4,29 +4,11 @@
     <hr>
     <jhi-alert-error></jhi-alert-error>
     <dl class="row-md jh-entity-details">
-        <dt><span>Description</span></dt>
+        <dt><span>Leader</span></dt>
         <dd>
-            <span>{{groups.description}}</span>
-        </dd>
-        <dt><span>Offical</span></dt>
-        <dd>
-            <span>{{groups.offical}}</span>
-        </dd>
-        <dt><span>Total Member</span></dt>
-        <dd>
-            <span>{{groups.totalMember}}</span>
-        </dd>
-        <dt><span>Custom User</span></dt>
-        <dd>
-            <div *ngIf="groups.customUserId">
-                <a [routerLink]="['/custom-user-tc', groups.customUserId]">{{groups.customUserId}}</a>
+            <div *ngIf="groups.leaderId">
+                <a [routerLink]="['/custom-user-tc', groups.leaderId]">{{groups.leaderId}}</a>
             </div>
-        </dd>
-        <dt><span>Members</span></dt>
-        <dd>
-            <span *ngFor="let members of groups.members; let last = last">
-                <a [routerLink]="['/groups-member-tc', members?.id ]">{{members.id}}</a>{{last ? '' : ', '}}
-            </span>
         </dd>
         <dt><span>Team</span></dt>
         <dd>

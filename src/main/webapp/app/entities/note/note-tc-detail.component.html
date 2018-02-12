@@ -1,0 +1,45 @@
+
+<div *ngIf="note">
+    <h2><span>Note</span> {{note.id}}</h2>
+    <hr>
+    <jhi-alert-error></jhi-alert-error>
+    <dl class="row-md jh-entity-details">
+        <dt><span>General</span></dt>
+        <dd>
+            <span>{{note.general}}</span>
+        </dd>
+        <dt><span>Separate</span></dt>
+        <dd>
+            <span>{{note.separate}}</span>
+        </dd>
+        <dt><span>Reminder</span></dt>
+        <dd>
+            <span>{{note.reminder}}</span>
+        </dd>
+        <dt><span>Custom User</span></dt>
+        <dd>
+            <div *ngIf="note.customUserId">
+                <a [routerLink]="['/custom-user-tc', note.customUserId]">{{note.customUserId}}</a>
+            </div>
+        </dd>
+        <dt><span>Appointment</span></dt>
+        <dd>
+            <div *ngIf="note.appointmentId">
+                <a [routerLink]="['/appointment-tc', note.appointmentId]">{{note.appointmentId}}</a>
+            </div>
+        </dd>
+    </dl>
+
+    <button type="submit"
+            (click)="previousState()"
+            class="btn btn-info">
+        <span class="fa fa-arrow-left"></span>&nbsp;<span> Back</span>
+    </button>
+
+    <button type="button"
+            [routerLink]="['/', { outlets: { popup: 'note-tc/'+ note.id + '/edit'} }]"
+            replaceUrl="true"
+            class="btn btn-primary">
+        <span class="fa fa-pencil"></span>&nbsp;<span> Edit</span>
+    </button>
+</div>

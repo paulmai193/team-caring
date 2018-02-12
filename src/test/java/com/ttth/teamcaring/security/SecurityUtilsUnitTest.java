@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,56 +16,76 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
-* Test class for the SecurityUtils utility class.
-*
-* @see SecurityUtils
-*/
+ * Test class for the SecurityUtils utility class.
+ *
+ * @see SecurityUtils
+ */
 public class SecurityUtilsUnitTest {
 
+    /**
+     * Testget current user login.
+     */
     @Test
     public void testgetCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin"));
+        securityContext
+                .setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin"));
         SecurityContextHolder.setContext(securityContext);
         String login = SecurityUtils.getCurrentUserLogin();
         assertThat(login).isEqualTo("admin");
     }
 
+    /**
+     * Testget current user JWT.
+     */
     @Test
     public void testgetCurrentUserJWT() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "token"));
+        securityContext
+                .setAuthentication(new UsernamePasswordAuthenticationToken("admin", "token"));
         SecurityContextHolder.setContext(securityContext);
         String jwt = SecurityUtils.getCurrentUserJWT();
         assertThat(jwt).isEqualTo("token");
     }
 
+    /**
+     * Test is authenticated.
+     */
     @Test
     public void testIsAuthenticated() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin"));
+        securityContext
+                .setAuthentication(new UsernamePasswordAuthenticationToken("admin", "admin"));
         SecurityContextHolder.setContext(securityContext);
         boolean isAuthenticated = SecurityUtils.isAuthenticated();
         assertThat(isAuthenticated).isTrue();
     }
 
+    /**
+     * Test anonymous is not authenticated.
+     */
     @Test
     public void testAnonymousIsNotAuthenticated() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.ANONYMOUS));
-        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("anonymous", "anonymous", authorities));
+        securityContext.setAuthentication(
+                new UsernamePasswordAuthenticationToken("anonymous", "anonymous", authorities));
         SecurityContextHolder.setContext(securityContext);
         boolean isAuthenticated = SecurityUtils.isAuthenticated();
         assertThat(isAuthenticated).isFalse();
     }
 
+    /**
+     * Test is current user in role.
+     */
     @Test
     public void testIsCurrentUserInRole() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         Collection<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(AuthoritiesConstants.USER));
-        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken("user", "user", authorities));
+        securityContext.setAuthentication(
+                new UsernamePasswordAuthenticationToken("user", "user", authorities));
         SecurityContextHolder.setContext(securityContext);
 
         assertThat(SecurityUtils.isCurrentUserInRole(AuthoritiesConstants.USER)).isTrue();

@@ -1,129 +1,219 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.domain;
 
 import java.io.Serializable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.springframework.data.elasticsearch.annotations.Document;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 /**
  * A GroupsMember.
+ *
+ * @author Dai Mai
  */
 @Entity
 @Table(name = "groups_member")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 @Document(indexName = "groupsmember")
-public class GroupsMember implements Serializable {
+public class GroupsMember extends AbstractAuditingEntity implements Serializable {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 1L;
 
+    /** The Constant STATUS_PENDING. */
+    public static final int   STATUS_PENDING   = 0;
+
+    /** The Constant STATUS_ACCEPTED. */
+    public static final int   STATUS_ACCEPTED  = 1;
+
+    /** The Constant STATUS_REJECTED. */
+    public static final int   STATUS_REJECTED  = 2;
+
+    /** The id. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long              id;
 
+    /** The level. */
     @Column(name = "jhi_level")
-    private Integer level;
+    private Integer           level;
 
-    @ManyToMany
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "groups_member_members",
-               joinColumns = @JoinColumn(name="groups_members_id", referencedColumnName="id"),
-               inverseJoinColumns = @JoinColumn(name="members_id", referencedColumnName="id"))
-    private Set<CustomUser> members = new HashSet<>();
+    /** The status. */
+    @Column(name = "status")
+    private Integer           status;
 
-    @ManyToMany(mappedBy = "members")
-    @JsonIgnore
-    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    private Set<Groups> groups = new HashSet<>();
+    /** The custom user. */
+    @ManyToOne
+    private CustomUser        customUser;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
+    /** The groups. */
+    @ManyToOne
+    private Groups            groups;
+
+    /**
+     * Gets the id.
+     *
+     * @return the id
+     */
+    // jhipster-needle-entity-add-field - JHipster will add fields here, do not
+    // remove
     public Long getId() {
         return id;
     }
 
+    /**
+     * Sets the id.
+     *
+     * @param id
+     *        the new id
+     */
     public void setId(Long id) {
         this.id = id;
     }
 
+    /**
+     * Gets the level.
+     *
+     * @return the level
+     */
     public Integer getLevel() {
         return level;
     }
 
+    /**
+     * Level.
+     *
+     * @param level
+     *        the level
+     * @return the groups member
+     */
     public GroupsMember level(Integer level) {
         this.level = level;
         return this;
     }
 
+    /**
+     * Sets the level.
+     *
+     * @param level
+     *        the new level
+     */
     public void setLevel(Integer level) {
         this.level = level;
     }
 
-    public Set<CustomUser> getMembers() {
-        return members;
+    /**
+     * Gets the status.
+     *
+     * @return the status
+     */
+    public Integer getStatus() {
+        return status;
     }
 
-    public GroupsMember members(Set<CustomUser> customUsers) {
-        this.members = customUsers;
+    /**
+     * Status.
+     *
+     * @param status
+     *        the status
+     * @return the groups member
+     */
+    public GroupsMember status(Integer status) {
+        this.status = status;
         return this;
     }
 
-    public GroupsMember addMembers(CustomUser customUser) {
-        this.members.add(customUser);
-        customUser.getMembers().add(this);
+    /**
+     * Sets the status.
+     *
+     * @param status
+     *        the new status
+     */
+    public void setStatus(Integer status) {
+        this.status = status;
+    }
+
+    /**
+     * Gets the custom user.
+     *
+     * @return the custom user
+     */
+    public CustomUser getCustomUser() {
+        return customUser;
+    }
+
+    /**
+     * Custom user.
+     *
+     * @param customUser
+     *        the custom user
+     * @return the groups member
+     */
+    public GroupsMember customUser(CustomUser customUser) {
+        this.customUser = customUser;
         return this;
     }
 
-    public GroupsMember removeMembers(CustomUser customUser) {
-        this.members.remove(customUser);
-        customUser.getMembers().remove(this);
-        return this;
+    /**
+     * Sets the custom user.
+     *
+     * @param customUser
+     *        the new custom user
+     */
+    public void setCustomUser(CustomUser customUser) {
+        this.customUser = customUser;
     }
 
-    public void setMembers(Set<CustomUser> customUsers) {
-        this.members = customUsers;
-    }
-
-    public Set<Groups> getGroups() {
+    /**
+     * Gets the groups.
+     *
+     * @return the groups
+     */
+    public Groups getGroups() {
         return groups;
     }
 
-    public GroupsMember groups(Set<Groups> groups) {
+    /**
+     * Groups.
+     *
+     * @param groups
+     *        the groups
+     * @return the groups member
+     */
+    public GroupsMember groups(Groups groups) {
         this.groups = groups;
         return this;
     }
 
-    public GroupsMember addGroups(Groups groups) {
-        this.groups.add(groups);
-        groups.getMembers().add(this);
-        return this;
-    }
-
-    public GroupsMember removeGroups(Groups groups) {
-        this.groups.remove(groups);
-        groups.getMembers().remove(this);
-        return this;
-    }
-
-    public void setGroups(Set<Groups> groups) {
+    /**
+     * Sets the groups.
+     *
+     * @param groups
+     *        the new groups
+     */
+    public void setGroups(Groups groups) {
         this.groups = groups;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters
+    // and setters here, do not remove
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -139,16 +229,24 @@ public class GroupsMember implements Serializable {
         return Objects.equals(getId(), groupsMember.getId());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
     @Override
     public int hashCode() {
         return Objects.hashCode(getId());
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString() {
-        return "GroupsMember{" +
-            "id=" + getId() +
-            ", level='" + getLevel() + "'" +
-            "}";
+        return "GroupsMember{" + "id=" + getId() + ", level='" + getLevel() + "'" + ", status='"
+                + getStatus() + "'" + "}";
     }
 }

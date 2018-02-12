@@ -1,23 +1,44 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.service.mapper;
 
-import com.ttth.teamcaring.domain.*;
-import com.ttth.teamcaring.service.dto.TeamDTO;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
-import org.mapstruct.*;
+import com.ttth.teamcaring.domain.Team;
+import com.ttth.teamcaring.service.dto.TeamDTO;
 
 /**
  * Mapper for the entity Team and its DTO TeamDTO.
+ *
+ * @author Dai Mai
  */
-@Mapper(componentModel = "spring", uses = {IconMapper.class})
+@Mapper(componentModel = "spring", uses = { CustomUserMapper.class, IconMapper.class })
 public interface TeamMapper extends EntityMapper<TeamDTO, Team> {
 
+    /* (non-Javadoc)
+     * @see com.ttth.teamcaring.service.mapper.EntityMapper#toDto(java.lang.Object)
+     */
+    @Mapping(source = "owner.id", target = "ownerId")
     @Mapping(source = "icon.id", target = "iconId")
-    TeamDTO toDto(Team team); 
+    TeamDTO toDto(Team team);
 
-    @Mapping(source = "iconId", target = "icon")
+    /* (non-Javadoc)
+     * @see com.ttth.teamcaring.service.mapper.EntityMapper#toEntity(java.lang.Object)
+     */
     @Mapping(target = "groups", ignore = true)
+    @Mapping(target = "appointments", ignore = true)
+    @Mapping(source = "ownerId", target = "owner")
+    @Mapping(source = "iconId", target = "icon")
     Team toEntity(TeamDTO teamDTO);
 
+    /**
+     * From id.
+     *
+     * @param id the id
+     * @return the team
+     */
     default Team fromId(Long id) {
         if (id == null) {
             return null;

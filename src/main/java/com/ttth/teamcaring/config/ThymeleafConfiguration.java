@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.config;
 
 import org.apache.commons.lang3.CharEncoding;
@@ -8,12 +11,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Description;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+/**
+ * The Class ThymeleafConfiguration.
+ *
+ * @author Dai Mai
+ */
 @Configuration
 public class ThymeleafConfiguration {
 
+    /** The log. */
     @SuppressWarnings("unused")
     private final Logger log = LoggerFactory.getLogger(ThymeleafConfiguration.class);
 
+    /**
+     * Email template resolver.
+     *
+     * @return the class loader template resolver
+     */
     @Bean
     @Description("Thymeleaf template resolver serving HTML 5 emails")
     public ClassLoaderTemplateResolver emailTemplateResolver() {

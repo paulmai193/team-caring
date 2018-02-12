@@ -30,10 +30,7 @@
             <thead>
             <tr jhiSort [(predicate)]="predicate" [(ascending)]="reverse" [callback]="transition.bind(this)">
             <th jhiSortBy="id"><span>ID</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="description"><span>Description</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="offical"><span>Offical</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="totalMember"><span>Total Member</span> <span class="fa fa-sort"></span></th>
-            <th jhiSortBy="customUserId"><span>Custom User</span> <span class="fa fa-sort"></span></th>
+            <th jhiSortBy="leaderId"><span>Leader</span> <span class="fa fa-sort"></span></th>
             <th jhiSortBy="teamId"><span>Team</span> <span class="fa fa-sort"></span></th>
             <th></th>
             </tr>
@@ -41,12 +38,9 @@
             <tbody>
             <tr *ngFor="let groups of groups ;trackBy: trackId">
                 <td><a [routerLink]="['../groups-tc', groups.id ]">{{groups.id}}</a></td>
-                <td>{{groups.description}}</td>
-                <td>{{groups.offical}}</td>
-                <td>{{groups.totalMember}}</td>
                 <td>
-                    <div *ngIf="groups.customUserId">
-                        <a [routerLink]="['../custom-user-tc', groups.customUserId  ]" >{{groups.customUserId}}</a>
+                    <div *ngIf="groups.leaderId">
+                        <a [routerLink]="['../custom-user-tc', groups.leaderId  ]" >{{groups.leaderId}}</a>
                     </div>
                 </td>
                 <td>

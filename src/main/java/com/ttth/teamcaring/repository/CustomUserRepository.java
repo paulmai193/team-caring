@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.repository;
 
 import java.util.Optional;
@@ -7,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import com.ttth.teamcaring.domain.CustomUser;
 
-
 /**
  * Spring Data JPA repository for the CustomUser entity.
  *
@@ -15,12 +17,14 @@ import com.ttth.teamcaring.domain.CustomUser;
  */
 @Repository
 public interface CustomUserRepository extends JpaRepository<CustomUser, Long> {
-	
-	/**
-	 * Find one by user.
-	 *
-	 * @param userId the user id
-	 * @return the optional
-	 */
-	Optional<CustomUser> findOneByUserId(Long userId);
+
+    /**
+     * Find one by user.
+     *
+     * @param userId
+     *        the user id
+     * @return the optional
+     */
+    Optional<CustomUser> findOneByUserId(Long userId);
+
 }

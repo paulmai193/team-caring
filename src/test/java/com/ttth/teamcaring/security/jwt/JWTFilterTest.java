@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.security.jwt;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,13 +22,22 @@ import com.ttth.teamcaring.security.AuthoritiesConstants;
 
 import io.github.jhipster.config.JHipsterProperties;
 
+/**
+ * The Class JWTFilterTest.
+ *
+ * @author Dai Mai
+ */
 public class JWTFilterTest {
 
-
+    /** The token provider. */
     private TokenProvider tokenProvider;
 
-    private JWTFilter jwtFilter;
+    /** The jwt filter. */
+    private JWTFilter     jwtFilter;
 
+    /**
+     * Setup.
+     */
     @Before
     public void setup() {
         JHipsterProperties jHipsterProperties = new JHipsterProperties();
@@ -36,13 +48,17 @@ public class JWTFilterTest {
         SecurityContextHolder.getContext().setAuthentication(null);
     }
 
+    /**
+     * Test JWT filter.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     public void testJWTFilter() throws Exception {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            "test-user",
-            "test-password",
-            Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.USER))
-        );
+                "test-user", "test-password",
+                Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.USER)));
         String jwt = tokenProvider.createToken(authentication, false);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(JWTConfigurer.AUTHORIZATION_HEADER, "Bearer " + jwt);
@@ -51,10 +67,19 @@ public class JWTFilterTest {
         MockFilterChain filterChain = new MockFilterChain();
         jwtFilter.doFilter(request, response, filterChain);
         assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getName()).isEqualTo("test-user");
-        assertThat(SecurityContextHolder.getContext().getAuthentication().getCredentials().toString()).isEqualTo(jwt);
+        assertThat(SecurityContextHolder.getContext().getAuthentication().getName())
+                .isEqualTo("test-user");
+        assertThat(
+                SecurityContextHolder.getContext().getAuthentication().getCredentials().toString())
+                        .isEqualTo(jwt);
     }
 
+    /**
+     * Test JWT filter invalid token.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     public void testJWTFilterInvalidToken() throws Exception {
         String jwt = "wrong_jwt";
@@ -68,6 +93,12 @@ public class JWTFilterTest {
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 
+    /**
+     * Test JWT filter missing authorization.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     public void testJWTFilterMissingAuthorization() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -79,6 +110,12 @@ public class JWTFilterTest {
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 
+    /**
+     * Test JWT filter missing token.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     public void testJWTFilterMissingToken() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -91,13 +128,17 @@ public class JWTFilterTest {
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
     }
 
+    /**
+     * Test JWT filter wrong scheme.
+     *
+     * @throws Exception
+     *         the exception
+     */
     @Test
     public void testJWTFilterWrongScheme() throws Exception {
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-            "test-user",
-            "test-password",
-            Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.USER))
-        );
+                "test-user", "test-password",
+                Collections.singletonList(new SimpleGrantedAuthority(AuthoritiesConstants.USER)));
         String jwt = tokenProvider.createToken(authentication, false);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.addHeader(JWTConfigurer.AUTHORIZATION_HEADER, "Basic " + jwt);

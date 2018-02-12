@@ -1,3 +1,6 @@
+/*
+ * 
+ */
 package com.ttth.teamcaring.repository;
 
 import java.util.Collections;
@@ -22,23 +25,50 @@ import org.springframework.util.MultiValueMap;
 
 import com.ttth.teamcaring.domain.SocialUserConnection;
 
+/**
+ * The Class CustomSocialConnectionRepository.
+ *
+ * @author Dai Mai
+ */
 public class CustomSocialConnectionRepository implements ConnectionRepository {
 
-    private String userId;
+    /** The user id. */
+    private String                         userId;
 
+    /** The social user connection repository. */
     private SocialUserConnectionRepository socialUserConnectionRepository;
 
-    private ConnectionFactoryLocator connectionFactoryLocator;
+    /** The connection factory locator. */
+    private ConnectionFactoryLocator       connectionFactoryLocator;
 
-    public CustomSocialConnectionRepository(String userId, SocialUserConnectionRepository socialUserConnectionRepository, ConnectionFactoryLocator connectionFactoryLocator) {
+    /**
+     * Instantiates a new custom social connection repository.
+     *
+     * @param userId
+     *        the user id
+     * @param socialUserConnectionRepository
+     *        the social user connection repository
+     * @param connectionFactoryLocator
+     *        the connection factory locator
+     */
+    public CustomSocialConnectionRepository(String userId,
+            SocialUserConnectionRepository socialUserConnectionRepository,
+            ConnectionFactoryLocator connectionFactoryLocator) {
         this.userId = userId;
         this.socialUserConnectionRepository = socialUserConnectionRepository;
         this.connectionFactoryLocator = connectionFactoryLocator;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.social.connect.ConnectionRepository#
+     * findAllConnections()
+     */
     @Override
     public MultiValueMap<String, Connection<?>> findAllConnections() {
-        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository.findAllByUserIdOrderByProviderIdAscRankAsc(userId);
+        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository
+                .findAllByUserIdOrderByProviderIdAscRankAsc(userId);
         List<Connection<?>> connections = socialUserConnectionsToConnections(socialUserConnections);
         MultiValueMap<String, Connection<?>> connectionsByProviderId = new LinkedMultiValueMap<>();
         Set<String> registeredProviderIds = connectionFactoryLocator.registeredProviderIds();
@@ -55,12 +85,27 @@ public class CustomSocialConnectionRepository implements ConnectionRepository {
         return connectionsByProviderId;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.social.connect.ConnectionRepository#findConnections(
+     * java.lang.String)
+     */
     @Override
     public List<Connection<?>> findConnections(String providerId) {
-        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository.findAllByUserIdAndProviderIdOrderByRankAsc(userId, providerId);
+        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository
+                .findAllByUserIdAndProviderIdOrderByRankAsc(userId, providerId);
         return socialUserConnectionsToConnections(socialUserConnections);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.social.connect.ConnectionRepository#findConnections(
+     * java.lang.Class)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <A> List<Connection<A>> findConnections(Class<A> apiType) {
@@ -68,8 +113,15 @@ public class CustomSocialConnectionRepository implements ConnectionRepository {
         return (List<Connection<A>>) connections;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.social.connect.ConnectionRepository#
+     * findConnectionsToUsers(org.springframework.util.MultiValueMap)
+     */
     @Override
-    public MultiValueMap<String, Connection<?>> findConnectionsToUsers(MultiValueMap<String, String> providerUserIdsByProviderId) {
+    public MultiValueMap<String, Connection<?>> findConnectionsToUsers(
+            MultiValueMap<String, String> providerUserIdsByProviderId) {
         if (providerUserIdsByProviderId == null || providerUserIdsByProviderId.isEmpty()) {
             throw new IllegalArgumentException("Unable to execute find: no providerUsers provided");
         }
@@ -78,20 +130,36 @@ public class CustomSocialConnectionRepository implements ConnectionRepository {
         for (Map.Entry<String, List<String>> entry : providerUserIdsByProviderId.entrySet()) {
             String providerId = entry.getKey();
             List<String> providerUserIds = entry.getValue();
-            List<Connection<?>> connections = providerUserIdsToConnections(providerId, providerUserIds);
+            List<Connection<?>> connections = providerUserIdsToConnections(providerId,
+                    providerUserIds);
             connections.forEach(connection -> connectionsForUsers.add(providerId, connection));
         }
         return connectionsForUsers;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.social.connect.ConnectionRepository#getConnection(org
+     * .springframework.social.connect.ConnectionKey)
+     */
     @Override
     public Connection<?> getConnection(ConnectionKey connectionKey) {
-        SocialUserConnection socialUserConnection = socialUserConnectionRepository.findOneByUserIdAndProviderIdAndProviderUserId(userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
-        return Optional.ofNullable(socialUserConnection)
-            .map(this::socialUserConnectionToConnection)
-            .orElseThrow(() -> new NoSuchConnectionException(connectionKey));
+        SocialUserConnection socialUserConnection = socialUserConnectionRepository
+                .findOneByUserIdAndProviderIdAndProviderUserId(userId,
+                        connectionKey.getProviderId(), connectionKey.getProviderUserId());
+        return Optional.ofNullable(socialUserConnection).map(this::socialUserConnectionToConnection)
+                .orElseThrow(() -> new NoSuchConnectionException(connectionKey));
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.social.connect.ConnectionRepository#getConnection(
+     * java.lang.Class, java.lang.String)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <A> Connection<A> getConnection(Class<A> apiType, String providerUserId) {
@@ -99,6 +167,12 @@ public class CustomSocialConnectionRepository implements ConnectionRepository {
         return (Connection<A>) getConnection(new ConnectionKey(providerId, providerUserId));
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.social.connect.ConnectionRepository#
+     * getPrimaryConnection(java.lang.Class)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <A> Connection<A> getPrimaryConnection(Class<A> apiType) {
@@ -110,6 +184,12 @@ public class CustomSocialConnectionRepository implements ConnectionRepository {
         return connection;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.springframework.social.connect.ConnectionRepository#
+     * findPrimaryConnection(java.lang.Class)
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <A> Connection<A> findPrimaryConnection(Class<A> apiType) {
@@ -117,96 +197,180 @@ public class CustomSocialConnectionRepository implements ConnectionRepository {
         return (Connection<A>) findPrimaryConnection(providerId);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.social.connect.ConnectionRepository#addConnection(org
+     * .springframework.social.connect.Connection)
+     */
     @Override
     @Transactional
     public void addConnection(Connection<?> connection) {
         Long rank = getNewMaxRank(connection.getKey().getProviderId()).longValue();
-        SocialUserConnection socialUserConnectionToSave = connectionToUserSocialConnection(connection, rank);
+        SocialUserConnection socialUserConnectionToSave = connectionToUserSocialConnection(
+                connection, rank);
         socialUserConnectionRepository.save(socialUserConnectionToSave);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.social.connect.ConnectionRepository#updateConnection(
+     * org.springframework.social.connect.Connection)
+     */
     @Override
     @Transactional
     public void updateConnection(Connection<?> connection) {
-        SocialUserConnection socialUserConnection = socialUserConnectionRepository.findOneByUserIdAndProviderIdAndProviderUserId(userId, connection.getKey().getProviderId(), connection.getKey().getProviderUserId());
+        SocialUserConnection socialUserConnection = socialUserConnectionRepository
+                .findOneByUserIdAndProviderIdAndProviderUserId(userId,
+                        connection.getKey().getProviderId(),
+                        connection.getKey().getProviderUserId());
         if (socialUserConnection != null) {
-            SocialUserConnection socialUserConnectionToUdpate =  connectionToUserSocialConnection(connection, socialUserConnection.getRank());
+            SocialUserConnection socialUserConnectionToUdpate = connectionToUserSocialConnection(
+                    connection, socialUserConnection.getRank());
             socialUserConnectionToUdpate.setId(socialUserConnection.getId());
             socialUserConnectionRepository.save(socialUserConnectionToUdpate);
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.social.connect.ConnectionRepository#removeConnections
+     * (java.lang.String)
+     */
     @Override
     @Transactional
     public void removeConnections(String providerId) {
         socialUserConnectionRepository.deleteByUserIdAndProviderId(userId, providerId);
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.springframework.social.connect.ConnectionRepository#removeConnection(
+     * org.springframework.social.connect.ConnectionKey)
+     */
     @Override
     @Transactional
     public void removeConnection(ConnectionKey connectionKey) {
-        socialUserConnectionRepository.deleteByUserIdAndProviderIdAndProviderUserId(userId, connectionKey.getProviderId(), connectionKey.getProviderUserId());
+        socialUserConnectionRepository.deleteByUserIdAndProviderIdAndProviderUserId(userId,
+                connectionKey.getProviderId(), connectionKey.getProviderUserId());
     }
 
+    /**
+     * Gets the new max rank.
+     *
+     * @param providerId
+     *        the provider id
+     * @return the new max rank
+     */
     private Double getNewMaxRank(String providerId) {
-        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository.findAllByUserIdAndProviderIdOrderByRankAsc(userId, providerId);
-        return socialUserConnections.stream()
-            .mapToDouble(SocialUserConnection::getRank)
-            .max()
-            .orElse(0D) + 1D;
+        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository
+                .findAllByUserIdAndProviderIdOrderByRankAsc(userId, providerId);
+        return socialUserConnections.stream().mapToDouble(SocialUserConnection::getRank).max()
+                .orElse(0D) + 1D;
     }
 
+    /**
+     * Find primary connection.
+     *
+     * @param providerId
+     *        the provider id
+     * @return the connection
+     */
     private Connection<?> findPrimaryConnection(String providerId) {
-        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository.findAllByUserIdAndProviderIdOrderByRankAsc(userId, providerId);
+        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository
+                .findAllByUserIdAndProviderIdOrderByRankAsc(userId, providerId);
         if (socialUserConnections.size() > 0) {
             return socialUserConnectionToConnection(socialUserConnections.get(0));
-        } else {
+        }
+        else {
             return null;
         }
     }
 
-    private SocialUserConnection connectionToUserSocialConnection(Connection<?> connection, Long rank) {
+    /**
+     * Connection to user social connection.
+     *
+     * @param connection
+     *        the connection
+     * @param rank
+     *        the rank
+     * @return the social user connection
+     */
+    private SocialUserConnection connectionToUserSocialConnection(Connection<?> connection,
+            Long rank) {
         ConnectionData connectionData = connection.createData();
-        return new SocialUserConnection(
-            userId,
-            connection.getKey().getProviderId(),
-            connection.getKey().getProviderUserId(),
-            rank,
-            connection.getDisplayName(),
-            connection.getProfileUrl(),
-            connection.getImageUrl(),
-            connectionData.getAccessToken(),
-            connectionData.getSecret(),
-            connectionData.getRefreshToken(),
-            connectionData.getExpireTime()
-        );
+        return new SocialUserConnection(userId, connection.getKey().getProviderId(),
+                connection.getKey().getProviderUserId(), rank, connection.getDisplayName(),
+                connection.getProfileUrl(), connection.getImageUrl(),
+                connectionData.getAccessToken(), connectionData.getSecret(),
+                connectionData.getRefreshToken(), connectionData.getExpireTime());
     }
 
-    private List<Connection<?>> providerUserIdsToConnections(String providerId, List<String> providerUserIds) {
-        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository.findAllByUserIdAndProviderIdAndProviderUserIdIn(userId, providerId, providerUserIds);
+    /**
+     * Provider user ids to connections.
+     *
+     * @param providerId
+     *        the provider id
+     * @param providerUserIds
+     *        the provider user ids
+     * @return the list
+     */
+    private List<Connection<?>> providerUserIdsToConnections(String providerId,
+            List<String> providerUserIds) {
+        List<SocialUserConnection> socialUserConnections = socialUserConnectionRepository
+                .findAllByUserIdAndProviderIdAndProviderUserIdIn(userId, providerId,
+                        providerUserIds);
         return socialUserConnectionsToConnections(socialUserConnections);
     }
 
-    private List<Connection<?>> socialUserConnectionsToConnections(List<SocialUserConnection> socialUserConnections) {
-        return socialUserConnections.stream()
-            .map(this::socialUserConnectionToConnection)
-            .collect(Collectors.toList());
+    /**
+     * Social user connections to connections.
+     *
+     * @param socialUserConnections
+     *        the social user connections
+     * @return the list
+     */
+    private List<Connection<?>> socialUserConnectionsToConnections(
+            List<SocialUserConnection> socialUserConnections) {
+        return socialUserConnections.stream().map(this::socialUserConnectionToConnection)
+                .collect(Collectors.toList());
     }
 
-    private Connection<?> socialUserConnectionToConnection(SocialUserConnection socialUserConnection) {
+    /**
+     * Social user connection to connection.
+     *
+     * @param socialUserConnection
+     *        the social user connection
+     * @return the connection
+     */
+    private Connection<?> socialUserConnectionToConnection(
+            SocialUserConnection socialUserConnection) {
         ConnectionData connectionData = new ConnectionData(socialUserConnection.getProviderId(),
-            socialUserConnection.getProviderUserId(),
-            socialUserConnection.getDisplayName(),
-            socialUserConnection.getProfileURL(),
-            socialUserConnection.getImageURL(),
-            socialUserConnection.getAccessToken(),
-            socialUserConnection.getSecret(),
-            socialUserConnection.getRefreshToken(),
-            socialUserConnection.getExpireTime());
-        ConnectionFactory<?> connectionFactory = connectionFactoryLocator.getConnectionFactory(connectionData.getProviderId());
+                socialUserConnection.getProviderUserId(), socialUserConnection.getDisplayName(),
+                socialUserConnection.getProfileURL(), socialUserConnection.getImageURL(),
+                socialUserConnection.getAccessToken(), socialUserConnection.getSecret(),
+                socialUserConnection.getRefreshToken(), socialUserConnection.getExpireTime());
+        ConnectionFactory<?> connectionFactory = connectionFactoryLocator
+                .getConnectionFactory(connectionData.getProviderId());
         return connectionFactory.createConnection(connectionData);
     }
 
+    /**
+     * Gets the provider id.
+     *
+     * @param <A>
+     *        the generic type
+     * @param apiType
+     *        the api type
+     * @return the provider id
+     */
     private <A> String getProviderId(Class<A> apiType) {
         return connectionFactoryLocator.getConnectionFactory(apiType).getProviderId();
     }

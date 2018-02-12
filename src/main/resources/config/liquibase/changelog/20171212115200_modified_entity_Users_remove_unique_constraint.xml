@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <property name="now" value="now()" dbms="h2"/>
+
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="autoIncrement" value="true"/>
+
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+    
+    <!--
+        Remove the constraints for field User email.
+    -->
+    <changeSet id="20171212115200-0" author="jhipster">
+        <preConditions onFail="MARK_RAN">
+        		<indexExists tableName="jhi_user" indexName="ux_user_email"/>
+        </preConditions>
+        <dropUniqueConstraint constraintName="ux_user_email"
+                          tableName="jhi_user"
+                          uniqueColumns="email"/>
+    </changeSet>
+    <!--
+        Remove the index for field User email.
+    -->
+    <changeSet id="20171212115200-1" author="jhipster">
+        <preConditions onFail="MARK_RAN">
+        		<indexExists tableName="jhi_user" indexName="idx_user_email"/>
+        </preConditions>
+		  <dropIndex tableName="jhi_user" indexName="idx_user_email"/>
+		  <createIndex indexName="idx_user_email"
+            tableName="jhi_user"
+            unique="false">
+            <column name="email" type="varchar(100)"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

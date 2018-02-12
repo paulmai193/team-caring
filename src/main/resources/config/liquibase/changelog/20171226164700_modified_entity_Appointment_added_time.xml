@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    
+    <property name="now" value="now()" dbms="h2"/>
+
+    <property name="now" value="now()" dbms="mysql"/>
+    <property name="autoIncrement" value="true"/>
+
+    <property name="floatType" value="float4" dbms="postgresql, h2"/>
+    <property name="floatType" value="float" dbms="mysql, oracle, mssql"/>
+    
+    <!--
+        Added the constraints for entity Notification.
+    -->
+    <changeSet id="20171226164700" author="jhipster">
+        
+        <!-- Add column -->
+        <addColumn tableName="appointment">
+	        <!-- Time column -->
+            <!-- <column name="time" type="timestamp" defaultValueDate="${now}">
+                <constraints nullable="false"/>
+            </column> -->
+            <column name="time" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+	    </addColumn>
+
+    </changeSet>
+</databaseChangeLog>

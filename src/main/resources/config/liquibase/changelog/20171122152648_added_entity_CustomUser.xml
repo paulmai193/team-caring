@@ -33,6 +33,18 @@
             <column name="push_token" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
+
+            <column name="extra_group_name" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="extra_group_description" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+
+            <column name="extra_group_total_member" type="integer">
+                <constraints nullable="true" />
+            </column>
             <column name="user_id" type="bigint">
                 <constraints unique="true" nullable="true" />
             </column>

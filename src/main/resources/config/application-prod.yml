@@ -19,12 +19,12 @@ spring:
             enabled: false
         livereload:
             enabled: false
-    ####################### This datasource for develop on Helios server #######################
+    ####################### This datasource on TeamMap server #######################
     datasource:
         type: com.zaxxer.hikari.HikariDataSource
-        url: jdbc:mysql://localhost:3306/logia193_teamCaring?useUnicode=true&characterEncoding=utf8&useSSL=false
-        username: logia193_caring
-        password: s6.FF1zLbxdR
+        url: jdbc:mysql://210.2.86.99:3306/teammap?useUnicode=true&characterEncoding=utf8
+        username: teammap
+        password: 5EEvZDExMj99Z5FZ
         hikari:
             data-source-properties:
                 cachePrepStmts: true
@@ -41,10 +41,40 @@ spring:
             hibernate.cache.use_query_cache: false
             hibernate.generate_statistics: false
             hibernate.cache.region.factory_class: io.github.jhipster.config.jcache.NoDefaultJCacheRegionFactory
+            hibernate.cache.auto_evict_collection_cache: true
     data:
         elasticsearch:
             cluster-name:
-            cluster-nodes: localhost:9300
+            cluster-nodes: 210.2.86.99:9300
+    ################################################################################
+    
+    ####################### This datasource on Heroku server #######################        
+#    datasource:
+#        type: com.zaxxer.hikari.HikariDataSource
+#        url: jdbc:postgres://gkhraztcgmhvvx:2c8885e1742b48151113ece957423a407418258cdebfc8ace9531a2d13565b2f@ec2-54-235-254-251.compute-1.amazonaws.com:5432/d8c5makvnkosi3
+#        name:
+#        username: gkhraztcgmhvvx
+#        password: 2c8885e1742b48151113ece957423a407418258cdebfc8ace9531a2d13565b2f
+#    jpa:
+#        database-platform: com.ttth.teamcaring.domain.util.FixedPostgreSQL82Dialect
+#        database: POSTGRESQL
+#        show-sql: false
+#        properties:
+#            hibernate.id.new_generator_mappings: true
+#            hibernate.cache.use_second_level_cache: true
+#            hibernate.cache.use_query_cache: false
+#            hibernate.generate_statistics: false
+#            hibernate.cache.region.factory_class: io.github.jhipster.config.jcache.NoDefaultJCacheRegionFactory
+#            hibernate.cache.auto_evict_collection_cache: true
+#    data:
+#        elasticsearch:
+#            cluster-name:
+#            cluster-nodes:
+#            properties:
+#                path:
+#                    logs: target/elasticsearch/log
+#                    data: target/elasticsearch/data
+    ################################################################################
     mail:
         host: localhost
         port: 25
@@ -52,6 +82,12 @@ spring:
         password:
     thymeleaf:
         cache: true
+        
+logging:
+    level:
+        com.ttth.teamcaring: INFO
+        com: ERROR
+        org: ERROR
 
 liquibase:
     contexts: prod

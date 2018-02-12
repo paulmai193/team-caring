@@ -16,6 +16,28 @@
         <dd>
             <span>{{team.level}}</span>
         </dd>
+        <dt><span>Total Member</span></dt>
+        <dd>
+            <span>{{team.totalMember}}</span>
+        </dd>
+        <dt><span>Extra Group Name</span></dt>
+        <dd>
+            <span>{{team.extraGroupName}}</span>
+        </dd>
+        <dt><span>Extra Group Description</span></dt>
+        <dd>
+            <span>{{team.extraGroupDescription}}</span>
+        </dd>
+        <dt><span>Extra Group Total Member</span></dt>
+        <dd>
+            <span>{{team.extraGroupTotalMember}}</span>
+        </dd>
+        <dt><span>Owner</span></dt>
+        <dd>
+            <div *ngIf="team.ownerId">
+                <a [routerLink]="['/custom-user-tc', team.ownerId]">{{team.ownerId}}</a>
+            </div>
+        </dd>
         <dt><span>Icon</span></dt>
         <dd>
             <div *ngIf="team.iconId">
